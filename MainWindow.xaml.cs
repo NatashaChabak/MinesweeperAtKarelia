@@ -154,7 +154,7 @@ namespace Wpf_Karelia
             if (btn.Content == null)
              {
                 Image flagImage = new Image();
-                flagImage.Source = new BitmapImage(new Uri("OIP.jpg", UriKind.Relative));
+                flagImage.Source = new BitmapImage(new Uri("Flag.jpg", UriKind.Relative));
                 flagImage.Stretch = Stretch.UniformToFill;
                 btn.Content = flagImage;
                 btn.Click -= btnToggleRun_Click;
