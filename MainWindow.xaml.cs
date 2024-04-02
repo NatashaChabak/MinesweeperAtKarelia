@@ -29,8 +29,9 @@ namespace Wpf_Karelia
             minesArray = CreateMinesArray(10, 10);
 
             DrawGrid();
-            this.Content = gridMain;
-
+            root.Children.Add(gridMain);
+            Grid.SetRow(gridMain, 1);
+            //GameOver();
         }
 
         private int[,] CreateMinesArray(int y, int x)
@@ -69,7 +70,7 @@ namespace Wpf_Karelia
         {
             gridMain = new Grid();
 
-            gridMain.ShowGridLines = true;
+            gridMain.ShowGridLines = false;
             for (int i = 0; i < 10; i++)
             {
                 gridMain.ColumnDefinitions.Add(new ColumnDefinition());
@@ -94,47 +95,69 @@ namespace Wpf_Karelia
             Button button = new Button();
             button.Height = 50;
             button.Width = 50;
+            button.Background = Brushes.LightGray;
+
+            // Set the foreground color of the button (text color)
+            button.Foreground = Brushes.Black;
+
+            // Set the border brush and thickness to give it a border
+            button.BorderBrush = Brushes.Gray;
+            button.BorderThickness = new System.Windows.Thickness(5);
+
             button.Click += btnToggleRun_Click; //draw
             button.MouseRightButtonDown += btnSigned;
             return button;
         }
 
-        //public void GameOver()
-        //{
-        //    Grid gridMain = new Grid();
-        //    for (int i = 0; i < 5; i++)
-        //    {
-        //        for (int j = 0; j < 5; j++)
-        //        {
-        //            DrawCell(i, j);
-        //        }
-        //    }
-        //}
+        public void GameOver()
+        {
+            var buttons = gridMain.Children.OfType<Button>();
+            foreach (var button in buttons)
+            { DrawCell(button); }
+        }
 
-        //public int DrawCell(Button btn, int x, int y)
-        //{
-        //    //get from Array
-        //    return valueFromArray;
-        //}
+        public bool DrawCell(Button btn)
+        {
+            int _row = (int)btn.GetValue(Grid.RowProperty);
+            int _column = (int)btn.GetValue(Grid.ColumnProperty);
+            int cell = minesArray[_row, _column];
+            bool isMine = false;
+            if (cell == -1)
+            {
+                Image image = new Image();
+                image.Source = new BitmapImage(new Uri("OIP.jpg", UriKind.Relative));
+                image.Stretch = Stretch.UniformToFill;
+                btn.Content = image;
+                isMine = true;
+            }
+            else 
+            { 
+                btn.Content = cell; 
+            }
+          
+            btn.Click -= btnToggleRun_Click;
+            btn.MouseRightButtonDown -= btnSigned;
+            return isMine;
+        }
 
         public void btnSigned(object sender, RoutedEventArgs e)
         {
-            // get rid of the star ?
-              (sender as Button).Content = "*";
-            //  btn.Click -= btnToggleRun_Click; if star=true
+            Button btn = sender as Button;
+            if (btn.Content == null)
+                {
+                    btn.Content = "*";
+                    btn.Click -= btnToggleRun_Click;
+                }
+            else if (btn.Content.Equals("*")) {
+                btn.Content = null;
+                btn.Click += btnToggleRun_Click;
+            }
         }
 
         private void btnToggleRun_Click(object sender, RoutedEventArgs e)
         {
-            Button btn = (Button)sender;
-
-            int _row = (int)btn.GetValue(Grid.RowProperty);
-            int _column = (int)btn.GetValue(Grid.ColumnProperty);
-
-            //btn.Content = drawCell(btn, _row, _column);
-            btn.Content = _row + " " + _column + "\n" + minesArray[_row, _column];
-            btn.Click -= btnToggleRun_Click;
-            btn.MouseRightButtonDown -= btnSigned;
+            if (DrawCell(sender as Button))
+            { GameOver(); }
 
         }
 
