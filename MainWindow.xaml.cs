@@ -21,13 +21,11 @@ namespace Wpf_Karelia
     {
         Grid gridMain;
         int[,] minesArray;
+
         public MainWindow()
         {
-            InitializeComponent();
-
-            //initializeArray (2 dimensional) - random b + neighbors
             minesArray = CreateMinesArray(10, 10);
-
+            InitializeComponent();
             DrawGrid();
             root.Children.Add(gridMain);
             Grid.SetRow(gridMain, 1);
@@ -41,24 +39,24 @@ namespace Wpf_Karelia
             Random rnd = new Random();
             for (int c = 0; c < minesCount; c++)
             {
-                array[rnd.Next(y), rnd.Next(x)] = -1;
-            }
-            for (int i = 0; i < y; i++)
-            {
-                for (int j = 0; j < x; j++)
+                int xR = rnd.Next(x);
+                int yR = rnd.Next(y);
+
+                if (array[yR, xR] == -1) { continue; }
+                
+                array[yR, xR] = -1;
+
+                int startX = (xR - 1) < 0 ? xR : xR - 1;
+                int startY = (yR - 1) < 0 ? yR : yR - 1;
+                int finX = (xR + 2) > x ? xR : xR + 1;
+                int finY = (yR + 2) > y ? yR : yR + 1;
+
+
+                for (int k = startY; k < finY + 1; k++)
                 {
-                    if (array[i, j] == -1)
+                    for (int l = startX; l < finX + 1; l++)
                     {
-                        for (int k = -1; k < 2; k++)
-                        {
-                            for (int l = -1; l < 2; l++)
-                            {
-                                if ((0 <= i + k && i + k < y) && (0 <= j + l && j + l < x))
-                                { 
-                                    if (array[i + k, j + l] != -1) { array[i + k, j + l]++; }
-                                }
-                            }
-                        }
+                        if (array[k, l] != -1) { array[k, l]++; }
                     }
                 }
             }
@@ -97,14 +95,12 @@ namespace Wpf_Karelia
             button.Width = 50;
             button.Background = Brushes.LightGray;
 
-            // Set the foreground color of the button (text color)
             button.Foreground = Brushes.Black;
-
-            // Set the border brush and thickness to give it a border
             button.BorderBrush = Brushes.Gray;
-            button.BorderThickness = new System.Windows.Thickness(5);
-
-            button.Click += btnToggleRun_Click; //draw
+            
+            button.BorderThickness = new System.Windows.Thickness(0, 0, 5, 5);
+   
+            button.Click += btnToggleRun_Click; 
             button.MouseRightButtonDown += btnSigned;
             return button;
         }
@@ -124,31 +120,47 @@ namespace Wpf_Karelia
             bool isMine = false;
             if (cell == -1)
             {
-                Image image = new Image();
-                image.Source = new BitmapImage(new Uri("OIP.jpg", UriKind.Relative));
-                image.Stretch = Stretch.UniformToFill;
-                btn.Content = image;
+                Image mineImage = new Image();
+                mineImage.Source = new BitmapImage(new Uri("OIP.jpg", UriKind.Relative));
+                mineImage.Stretch = Stretch.UniformToFill;
+                btn.Content = mineImage;
                 isMine = true;
             }
             else 
             { 
-                btn.Content = cell; 
-            }
-          
+                btn.Content = cell;
+                btn.Foreground = getColor(cell);
+                btn.FontSize = 18; 
+                btn.FontWeight = FontWeights.Bold;
+            }      
             btn.Click -= btnToggleRun_Click;
             btn.MouseRightButtonDown -= btnSigned;
             return isMine;
+        }
+
+        public SolidColorBrush getColor(int cell)
+        {
+            if (cell == 0) { return Brushes.Gray; }
+            else if (cell == 1) { return Brushes.Blue; }
+            else if (cell == 2) { return Brushes.Green; }
+            else if (cell == 3) { return Brushes.Red; }
+            else if (cell == 4) { return Brushes.Brown; }
+            else { return Brushes.Yellow; }
         }
 
         public void btnSigned(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
             if (btn.Content == null)
-                {
-                    btn.Content = "*";
-                    btn.Click -= btnToggleRun_Click;
+             {
+                Image flagImage = new Image();
+                flagImage.Source = new BitmapImage(new Uri("OIP.jpg", UriKind.Relative));
+                flagImage.Stretch = Stretch.UniformToFill;
+                btn.Content = flagImage;
+                btn.Click -= btnToggleRun_Click;
                 }
-            else if (btn.Content.Equals("*")) {
+            else 
+            {
                 btn.Content = null;
                 btn.Click += btnToggleRun_Click;
             }
@@ -158,7 +170,6 @@ namespace Wpf_Karelia
         {
             if (DrawCell(sender as Button))
             { GameOver(); }
-
         }
 
     }
