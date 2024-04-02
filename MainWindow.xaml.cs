@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 
 namespace Wpf_Karelia
@@ -155,7 +147,7 @@ namespace Wpf_Karelia
              {
                 Image flagImage = new Image();
                 flagImage.Source = new BitmapImage(new Uri("Flag.jpg", UriKind.Relative));
-                flagImage.Stretch = Stretch.UniformToFill;
+               // flagImage.Stretch = Stretch.UniformToFill;
                 btn.Content = flagImage;
                 btn.Click -= btnToggleRun_Click;
                 }
