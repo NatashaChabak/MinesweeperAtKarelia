@@ -97,5 +97,8 @@
   <ItemGroup>
     <Resource Include="OIP.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Flag.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
