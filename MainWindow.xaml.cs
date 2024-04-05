@@ -24,25 +24,25 @@ namespace Wpf_Karelia
             //GameOver();
         }
 
-        private int[,] CreateMinesArray(int y, int x)
+        private int[,] CreateMinesArray(int ySize, int xSize)
         {
-            int [,] array = new int[y, x];
-            int minesCount = y * x / 10;
+            int [,] array = new int[ySize, xSize];
+            int minesCount = 5 + ySize * xSize / 10;
             Random rnd = new Random();
-            for (int c = 0; c < minesCount; c++)
+            while (minesCount > 0)
             {
-                int xR = rnd.Next(x);
-                int yR = rnd.Next(y);
+                int xR = rnd.Next(xSize);
+                int yR = rnd.Next(ySize);
 
                 if (array[yR, xR] == -1) { continue; }
                 
                 array[yR, xR] = -1;
+                minesCount--;
 
                 int startX = (xR - 1) < 0 ? xR : xR - 1;
                 int startY = (yR - 1) < 0 ? yR : yR - 1;
-                int finX = (xR + 2) > x ? xR : xR + 1;
-                int finY = (yR + 2) > y ? yR : yR + 1;
-
+                int finX = (xR + 2) > xSize ? xR : xR + 1;
+                int finY = (yR + 2) > ySize ? yR : yR + 1;
 
                 for (int k = startY; k < finY + 1; k++)
                 {
@@ -101,10 +101,10 @@ namespace Wpf_Karelia
         {
             var buttons = gridMain.Children.OfType<Button>();
             foreach (var button in buttons)
-            { DrawCell(button); }
+            { DrawCell(button, true); }
         }
 
-        public bool DrawCell(Button btn)
+        public bool DrawCell(Button btn, bool isGameOver = false)
         {
             int _row = (int)btn.GetValue(Grid.RowProperty);
             int _column = (int)btn.GetValue(Grid.ColumnProperty);
@@ -113,21 +113,67 @@ namespace Wpf_Karelia
             if (cell == -1)
             {
                 Image mineImage = new Image();
-                mineImage.Source = new BitmapImage(new Uri("OIP.jpg", UriKind.Relative));
+                mineImage.Source = new BitmapImage(new Uri("Mine.jpg", UriKind.Relative));
                 mineImage.Stretch = Stretch.UniformToFill;
                 btn.Content = mineImage;
                 isMine = true;
             }
-            else 
-            { 
-                btn.Content = cell;
-                btn.Foreground = getColor(cell);
-                btn.FontSize = 18; 
-                btn.FontWeight = FontWeights.Bold;
+            else if (cell == 0 && !isGameOver)
+            {
+                DrawCellAdjacentToZero(_row, _column);
+            }
+            else if (!isGameOver)
+            {
+                AddContentToButton(btn, cell);
             }      
-            btn.Click -= btnToggleRun_Click;
-            btn.MouseRightButtonDown -= btnSigned;
+            btn.Click -= btnToggleRun_Click; // change to btn.MouseLeftButtonDown -= btnToggleRun_Click;
+            btn.MouseRightButtonDown -= btnSigned; //change to BtnFlagged
             return isMine;
+        }
+        public void DrawCellAdjacentToZero(int row, int column)
+        {
+            Button btn = GetButtonFromGrid(gridMain, row, column);
+            int cell = minesArray[row, column];
+
+            if (minesArray[row, column] == 0 && btn.Content == null)
+            {
+                AddContentToButton(btn, cell);
+                for (int i = -1; i < 2; i++)
+                {
+                    for (int j = -1; j < 2; j++)
+                    {
+                        if (row + i >= 0 && row + i < 10 && column + j >= 0 && column + j < 10)
+                        {
+                            DrawCellAdjacentToZero(row + i, column + j);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void AddContentToButton(Button btn, int cell)
+        {
+            btn.Content = cell;
+            byte color = (byte)(255 / ((cell==0) ? 0.8 : cell));
+            //btn.Foreground = getColor(cell);
+            btn.Background = new SolidColorBrush(Color.FromArgb(128, color, color, color));
+            // btn.Background = getColor(cell);
+            //btn.Background.Opacity = 0.5;
+            btn.FontSize = 18;
+            btn.FontWeight = FontWeights.Bold;
+        }
+
+        public Button GetButtonFromGrid(Grid grid, int row, int column)
+        {
+            foreach (UIElement child in grid.Children)
+            {
+                if (Grid.GetRow(child) == row && Grid.GetColumn(child) == column && child is Button)
+                {
+                    return child as Button;
+                }
+            }
+
+            return null; // Return null if no button is found at the specified row and column
         }
 
         public SolidColorBrush getColor(int cell)
