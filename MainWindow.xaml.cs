@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.Common;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,15 +14,17 @@ namespace Wpf_Karelia
     {
         Grid gridMain;
         int[,] minesArray;
+        int ySize, xSize;
 
         public MainWindow()
         {
-            minesArray = CreateMinesArray(10, 10);
+            ySize = 10;
+            xSize = 15;
+            minesArray = CreateMinesArray(ySize, xSize);
             InitializeComponent();
             DrawGrid();
             root.Children.Add(gridMain);
             Grid.SetRow(gridMain, 1);
-            //GameOver();
         }
 
         private int[,] CreateMinesArray(int ySize, int xSize)
@@ -31,24 +34,22 @@ namespace Wpf_Karelia
             Random rnd = new Random();
             while (minesCount > 0)
             {
-                int xR = rnd.Next(xSize);
-                int yR = rnd.Next(ySize);
+                int xRandom = rnd.Next(xSize);
+                int yRandom = rnd.Next(ySize);
 
-                if (array[yR, xR] == -1) { continue; }
+                if (array[yRandom, xRandom] == -1) { continue; }
                 
-                array[yR, xR] = -1;
+                array[yRandom, xRandom] = -1;
                 minesCount--;
 
-                int startX = (xR - 1) < 0 ? xR : xR - 1;
-                int startY = (yR - 1) < 0 ? yR : yR - 1;
-                int finX = (xR + 2) > xSize ? xR : xR + 1;
-                int finY = (yR + 2) > ySize ? yR : yR + 1;
-
-                for (int k = startY; k < finY + 1; k++)
+                for (int i = -1; i < 2; i++)
                 {
-                    for (int l = startX; l < finX + 1; l++)
+                    for (int j = -1; j < 2; j++)
                     {
-                        if (array[k, l] != -1) { array[k, l]++; }
+                        if (yRandom + i >= 0 && yRandom + i < ySize && xRandom + j >= 0 && xRandom + j < xSize)
+                        {
+                            if (array[yRandom + i, xRandom + j] != -1) { array[yRandom + i, xRandom + j]++; }
+                        }
                     }
                 }
             }
@@ -61,15 +62,18 @@ namespace Wpf_Karelia
             gridMain = new Grid();
 
             gridMain.ShowGridLines = false;
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < xSize; i++)
             {
                 gridMain.ColumnDefinitions.Add(new ColumnDefinition());
+            }
+            for (int i = 0; i < ySize; i++)
+            {
                 gridMain.RowDefinitions.Add(new RowDefinition());
             }
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < xSize; i++)
             {
-                for (int j = 0; j < 10; j++)
+                for (int j = 0; j < ySize; j++)
                 {
                     Button button = AddButton();
                     Grid.SetColumn(button, i);
@@ -93,7 +97,7 @@ namespace Wpf_Karelia
             button.BorderThickness = new System.Windows.Thickness(0, 0, 5, 5);
    
             button.Click += btnToggleRun_Click; 
-            button.MouseRightButtonDown += btnSigned;
+            button.MouseRightButtonDown += BtnFlagged;
             return button;
         }
 
@@ -127,7 +131,7 @@ namespace Wpf_Karelia
                 AddContentToButton(btn, cell);
             }      
             btn.Click -= btnToggleRun_Click; // change to btn.MouseLeftButtonDown -= btnToggleRun_Click;
-            btn.MouseRightButtonDown -= btnSigned; //change to BtnFlagged
+            btn.MouseRightButtonDown -= BtnFlagged; //change to BtnFlagged
             return isMine;
         }
         public void DrawCellAdjacentToZero(int row, int column)
@@ -142,7 +146,7 @@ namespace Wpf_Karelia
                 {
                     for (int j = -1; j < 2; j++)
                     {
-                        if (row + i >= 0 && row + i < 10 && column + j >= 0 && column + j < 10)
+                        if (row + i >= 0 && row + i < ySize && column + j >= 0 && column + j < xSize)
                         {
                             DrawCellAdjacentToZero(row + i, column + j);
                         }
@@ -173,7 +177,7 @@ namespace Wpf_Karelia
             return null; // Return null if no button is found at the specified row and column
         }
 
-        public void btnSigned(object sender, RoutedEventArgs e)
+        public void BtnFlagged(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
             if (btn.Content == null)
