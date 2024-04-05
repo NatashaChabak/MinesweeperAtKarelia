@@ -27,7 +27,7 @@ namespace Wpf_Karelia
         private int[,] CreateMinesArray(int ySize, int xSize)
         {
             int [,] array = new int[ySize, xSize];
-            int minesCount = 5 + ySize * xSize / 10;
+            int minesCount = ySize * xSize / 8;
             Random rnd = new Random();
             while (minesCount > 0)
             {
@@ -154,11 +154,8 @@ namespace Wpf_Karelia
         private void AddContentToButton(Button btn, int cell)
         {
             btn.Content = cell;
-            byte color = (byte)(255 / ((cell==0) ? 0.8 : cell));
-            //btn.Foreground = getColor(cell);
+            byte color = (byte)(150 / ((cell==0) ? 0.8 : cell));
             btn.Background = new SolidColorBrush(Color.FromArgb(128, color, color, color));
-            // btn.Background = getColor(cell);
-            //btn.Background.Opacity = 0.5;
             btn.FontSize = 18;
             btn.FontWeight = FontWeights.Bold;
         }
@@ -176,16 +173,6 @@ namespace Wpf_Karelia
             return null; // Return null if no button is found at the specified row and column
         }
 
-        public SolidColorBrush getColor(int cell)
-        {
-            if (cell == 0) { return Brushes.Gray; }
-            else if (cell == 1) { return Brushes.Blue; }
-            else if (cell == 2) { return Brushes.Green; }
-            else if (cell == 3) { return Brushes.Red; }
-            else if (cell == 4) { return Brushes.Brown; }
-            else { return Brushes.Yellow; }
-        }
-
         public void btnSigned(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
@@ -193,7 +180,6 @@ namespace Wpf_Karelia
              {
                 Image flagImage = new Image();
                 flagImage.Source = new BitmapImage(new Uri("Flag.jpg", UriKind.Relative));
-               // flagImage.Stretch = Stretch.UniformToFill;
                 btn.Content = flagImage;
                 btn.Click -= btnToggleRun_Click;
                 }
