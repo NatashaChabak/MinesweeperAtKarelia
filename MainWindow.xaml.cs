@@ -99,23 +99,6 @@ namespace Wpf_Karelia
             return button;
         }
 
-        //public void GameOver()
-        //{
-        //    Grid gridMain = new Grid();
-        //    for (int i = 0; i < 5; i++)
-        //    {
-        //        for (int j = 0; j < 5; j++)
-        //        {
-        //            DrawCell(i, j);
-        //        }
-        //    }
-        //}
-
-        //public int DrawCell(Button btn, int x, int y)
-        //{
-        //    //get from Array
-        //    return valueFromArray;
-        //}
 
         public void btnSigned(object sender, RoutedEventArgs e)
         {
@@ -131,7 +114,6 @@ namespace Wpf_Karelia
             int _row = (int)btn.GetValue(Grid.RowProperty);
             int _column = (int)btn.GetValue(Grid.ColumnProperty);
 
-            //btn.Content = drawCell(btn, _row, _column);
             btn.Content = _row + " " + _column + "\n" + minesArray[_row, _column];
             btn.Click -= btnToggleRun_Click;
             btn.MouseRightButtonDown -= btnSigned;
