@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wpf_Karelia"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="800">
-    <Grid Name="root" Background="ForestGreen" ShowGridLines="True">
+        Title="MainWindow" SizeToContent="WidthAndHeight">
+    <Grid Name="root" ShowGridLines="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
