@@ -20,40 +20,11 @@ namespace Wpf_Karelia
         {
             ySize = 10;
             xSize = 15;
-            minesArray = CreateMinesArray(ySize, xSize);
+            minesArray = Methods.CreateMinesArray(ySize, xSize);
             InitializeComponent();
             DrawGrid();
             root.Children.Add(gridMain);
             Grid.SetRow(gridMain, 1);
-        }
-
-        private int[,] CreateMinesArray(int ySize, int xSize)
-        {
-            int [,] array = new int[ySize, xSize];
-            int minesCount = ySize * xSize / 8;
-            Random rnd = new Random();
-            while (minesCount > 0)
-            {
-                int xRandom = rnd.Next(xSize);
-                int yRandom = rnd.Next(ySize);
-
-                if (array[yRandom, xRandom] == -1) { continue; }
-                
-                array[yRandom, xRandom] = -1;
-                minesCount--;
-
-                for (int i = -1; i < 2; i++)
-                {
-                    for (int j = -1; j < 2; j++)
-                    {
-                        if (yRandom + i >= 0 && yRandom + i < ySize && xRandom + j >= 0 && xRandom + j < xSize)
-                        {
-                            if (array[yRandom + i, xRandom + j] != -1) { array[yRandom + i, xRandom + j]++; }
-                        }
-                    }
-                }
-            }
-            return array;
         }
 
         private void DrawGrid()
@@ -139,9 +110,11 @@ namespace Wpf_Karelia
             Button btn = GetButtonFromGrid(gridMain, row, column);
             int cell = minesArray[row, column];
 
-            if (minesArray[row, column] == 0 && btn.Content == null)
+            if (cell >= 0 && btn.Content == null)
             {
                 AddContentToButton(btn, cell);
+                if (cell == 0)
+                { 
                 for (int i = -1; i < 2; i++)
                 {
                     for (int j = -1; j < 2; j++)
@@ -152,18 +125,19 @@ namespace Wpf_Karelia
                         }
                     }
                 }
+                }
             }
         }
 
         private void AddContentToButton(Button btn, int cell)
         {
-            btn.Content = cell;
-            byte color = (byte)(150 / ((cell==0) ? 0.8 : cell));
-            btn.Background = new SolidColorBrush(Color.FromArgb(128, color, color, color));
+            if (cell != 0) btn.Content = cell; else btn.Content = "";
+            byte color = (byte)(255 / ((cell==0) ? 0.2 : cell*2));
+            btn.Background = new SolidColorBrush(Color.FromArgb(50, 255, 255, 255));
+            btn.Foreground = new SolidColorBrush(Color.FromArgb(255, 20, color, 20));
             btn.FontSize = 18;
             btn.FontWeight = FontWeights.Bold;
         }
-
         public Button GetButtonFromGrid(Grid grid, int row, int column)
         {
             foreach (UIElement child in grid.Children)
@@ -173,7 +147,6 @@ namespace Wpf_Karelia
                     return child as Button;
                 }
             }
-
             return null; // Return null if no button is found at the specified row and column
         }
 
