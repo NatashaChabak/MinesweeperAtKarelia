@@ -15,12 +15,15 @@ namespace Wpf_Karelia
         Grid gridMain;
         int[,] minesArray;
         int ySize, xSize;
+        BitmapImage bitmapImageFlag;
+        BitmapImage bitmapImageMine;
 
         public MainWindow()
         {
             ySize = 10;
             xSize = 15;
- 
+            bitmapImageFlag = new BitmapImage(new Uri("Flag.jpg", UriKind.Relative));
+            bitmapImageMine = new BitmapImage(new Uri("Mine.jpg", UriKind.Relative));
             InitializeComponent();
             StartTheGame();
         }
@@ -94,7 +97,7 @@ namespace Wpf_Karelia
             if (cell == -1)
             {
                 Image mineImage = new Image();
-                mineImage.Source = new BitmapImage(new Uri("Mine.jpg", UriKind.Relative));
+                mineImage.Source = bitmapImageMine;
                 mineImage.Stretch = Stretch.UniformToFill;
                 btn.Content = mineImage;
                 isMine = true;
@@ -108,7 +111,7 @@ namespace Wpf_Karelia
                 AddContentToButton(btn, cell);
             }      
             btn.Click -= btnToggleRun_Click; // change to btn.MouseLeftButtonDown -= btnToggleRun_Click;
-            btn.MouseRightButtonDown -= BtnFlagged; //change to BtnFlagged
+            btn.MouseRightButtonDown -= BtnFlagged;
             return isMine;
         }
         public void DrawCellAdjacentToZero(int row, int column)
@@ -165,7 +168,7 @@ namespace Wpf_Karelia
             if (btn.Content == null)
              {
                 Image flagImage = new Image();
-                flagImage.Source = new BitmapImage(new Uri("Flag.jpg", UriKind.Relative));
+                flagImage.Source = bitmapImageFlag;
                 btn.Content = flagImage;
                 btn.Click -= btnToggleRun_Click;
                 }
