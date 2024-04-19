@@ -20,14 +20,18 @@ namespace Wpf_Karelia
         {
             ySize = 10;
             xSize = 15;
-            minesArray = Methods.CreateMinesArray(ySize, xSize);
+ 
             InitializeComponent();
+            StartTheGame();
+        }
+
+        private void StartTheGame()
+        {
+            minesArray = Methods.CreateMinesArray(ySize, xSize);
             DrawGrid();
             root.Children.Add(gridMain);
             Grid.SetRow(gridMain, 1);
         }
-
-  
 
         private void DrawGrid()
 
@@ -172,11 +176,18 @@ namespace Wpf_Karelia
             }
         }
 
-        private void btnToggleRun_Click(object sender, RoutedEventArgs e)
+        private void BtnRestart_Click(object sender, RoutedEventArgs e)
+        {
+            gridMain.Children.Clear();
+            StartTheGame();
+        }
+
+        void btnToggleRun_Click(object sender, RoutedEventArgs e)
         {
             if (DrawCell(sender as Button))
             { GameOver(); }
         }
 
+ 
     }
 }

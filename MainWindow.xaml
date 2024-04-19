@@ -10,7 +10,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
-  
+
         </Grid.RowDefinitions>
+        <Button Content="Restart Game" HorizontalAlignment="Left" Margin="10,3,0,0" VerticalAlignment="Top" Click="BtnRestart_Click"/>
     </Grid>
 </Window>
