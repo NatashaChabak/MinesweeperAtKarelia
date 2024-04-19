@@ -90,9 +90,9 @@ namespace Wpf_Karelia
 
         public bool DrawCell(Button btn, bool isGameOver = false)
         {
-            int _row = (int)btn.GetValue(Grid.RowProperty);
-            int _column = (int)btn.GetValue(Grid.ColumnProperty);
-            int cell = minesArray[_row, _column];
+            int row = (int)btn.GetValue(Grid.RowProperty);
+            int column = (int)btn.GetValue(Grid.ColumnProperty);
+            int cell = minesArray[row, column];
             bool isMine = false;
             if (cell == -1)
             {
@@ -101,10 +101,12 @@ namespace Wpf_Karelia
                 mineImage.Stretch = Stretch.UniformToFill;
                 btn.Content = mineImage;
                 isMine = true;
+                byte minebyte = (byte)(30 + ((byte)row + (byte)column) / 2);
+                Methods.PlayNote(minebyte);
             }
             else if (cell == 0 && !isGameOver)
             {
-                DrawCellAdjacentToZero(_row, _column);
+                DrawCellAdjacentToZero(row, column);
             }
             else if (!isGameOver)
             {
@@ -172,6 +174,7 @@ namespace Wpf_Karelia
                 flagImage.Source = bitmapImageFlag;
                 btn.Content = flagImage;
                 btn.Click -= btnToggleRun_Click;
+                Methods.PlayNote(72);
                 }
             else 
             {
