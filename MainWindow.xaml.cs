@@ -27,6 +27,8 @@ namespace Wpf_Karelia
             Grid.SetRow(gridMain, 1);
         }
 
+  
+
         private void DrawGrid()
 
         {
@@ -137,6 +139,9 @@ namespace Wpf_Karelia
             btn.Foreground = new SolidColorBrush(Color.FromArgb(255, 20, color, 20));
             btn.FontSize = 18;
             btn.FontWeight = FontWeights.Bold;
+            btn.Click -= btnToggleRun_Click;
+            btn.MouseRightButtonDown -= BtnFlagged;
+
         }
         public Button GetButtonFromGrid(Grid grid, int row, int column)
         {
