@@ -1,8 +1,12 @@
-﻿using System;
+﻿using Melanchall.DryWetMidi.Common;
+using Melanchall.DryWetMidi.Core;
+using Melanchall.DryWetMidi.Multimedia;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -10,6 +14,7 @@ namespace Wpf_Karelia
 {
     class Methods
     {
+        static OutputDevice outputDevice = OutputDevice.GetByName("Microsoft GS Wavetable Synth");
         public static int[,] CreateMinesArray(int ySize, int xSize)
         {
             int[,] array = new int[ySize, xSize];
@@ -34,6 +39,13 @@ namespace Wpf_Karelia
                 }
             }
             return array;
+        }
+        public static void PlayNote(byte noteNumber)
+        {
+            var noteOn = new NoteOnEvent(new SevenBitNumber(noteNumber), new SevenBitNumber(noteNumber));
+            var midiFile = new MidiFile(new TrackChunk(noteOn));
+            var playback = midiFile.GetPlayback(outputDevice);
+            playback.Play();
         }
     }
 }
