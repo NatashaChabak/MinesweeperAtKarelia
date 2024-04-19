@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Melanchall.DryWetMidi.Multimedia;
+using System;
 using System.Data.Common;
 using System.Linq;
 using System.Windows;
@@ -17,7 +18,6 @@ namespace Wpf_Karelia
         int ySize, xSize;
         BitmapImage bitmapImageFlag;
         BitmapImage bitmapImageMine;
-
         public MainWindow()
         {
             ySize = 10;
@@ -148,6 +148,7 @@ namespace Wpf_Karelia
             btn.FontWeight = FontWeights.Bold;
             btn.Click -= btnToggleRun_Click;
             btn.MouseRightButtonDown -= BtnFlagged;
+            Methods.PlayNote((byte)(cell + 60));
 
         }
         public Button GetButtonFromGrid(Grid grid, int row, int column)
