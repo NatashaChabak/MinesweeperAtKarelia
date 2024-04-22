@@ -18,7 +18,7 @@ namespace Wpf_Karelia
     {
         Grid gridMain;
         int[,] minesArray;
-        int ySize, xSize, BombsCount;
+        int ySize, xSize, minesCount;
         BitmapImage bitmapImageFlag;
         BitmapImage bitmapImageMine;
         Timer timer;
@@ -29,7 +29,7 @@ namespace Wpf_Karelia
         {
             ySize = 10;
             xSize = 15;
-            BombsCount = ySize * xSize / 8;
+
             bitmapImageFlag = new BitmapImage(new Uri("Flag.jpg", UriKind.Relative));
             bitmapImageMine = new BitmapImage(new Uri("Mine.jpg", UriKind.Relative));
 
@@ -39,21 +39,21 @@ namespace Wpf_Karelia
 
             InitializeComponent();
             StartTheGame();
-            Methods.InitializeSound();
-        }
+         }
+
 
         private void grid_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (isStarted) {return;}
             ySize -= e.Delta/120;
             xSize -= e.Delta/120;
-            BombsCount = ySize * xSize / 8;
+
             gridMain.Children.Clear();
             StartTheGame();
         }
 
         private void ShowScore()
-        { scoreText.Text = string.Format("COUNT {0}", BombsCount); }
+        { scoreText.Text = string.Format("COUNT {0}", minesCount); }
 
         private void TimerElapsed(object sender, ElapsedEventArgs e)
         {
@@ -66,7 +66,8 @@ namespace Wpf_Karelia
 
         private void StartTheGame()
         {
-            minesArray = Methods.CreateMinesArray(ySize, xSize);
+            minesCount = ySize * xSize / 8;
+            minesArray = Methods.CreateMinesArray(ySize, xSize, minesCount);
             DrawGrid();
             root.Children.Add(gridMain);
             Grid.SetRow(gridMain, 1);
@@ -217,13 +218,13 @@ namespace Wpf_Karelia
                 btn.Content = flagImage;
                 btn.Click -= btnToggleRun_Click;
                 Methods.PlayNote(72);
-                BombsCount -= 1;
+                minesCount -= 1;
                 }
             else 
             {
                 btn.Content = null;
                 btn.Click += btnToggleRun_Click;
-                BombsCount += 1;
+                minesCount += 1;
             }
             ShowScore();
         }

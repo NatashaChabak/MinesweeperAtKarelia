@@ -14,11 +14,10 @@ namespace Wpf_Karelia
 {
     class Methods
     {
-        static OutputDevice outputDevice;
-        public static int[,] CreateMinesArray(int ySize, int xSize)
+        static OutputDevice outputDevice = OutputDevice.GetByName("Microsoft GS Wavetable Synth");
+        public static int[,] CreateMinesArray(int ySize, int xSize, int minesCount)
         {
             int[,] array = new int[ySize, xSize];
-            int minesCount = ySize * xSize / 8;
             Random rnd = new Random();
             while (minesCount > 0)
             {
@@ -39,10 +38,6 @@ namespace Wpf_Karelia
                 }
             }
             return array;
-        }
-        public static void InitializeSound()
-        {
-            outputDevice = OutputDevice.GetByName("Microsoft GS Wavetable Synth");
         }
         public static void PlayNote(byte noteNumber)
         {
