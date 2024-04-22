@@ -44,7 +44,6 @@ namespace Wpf_Karelia
         {
             outputDevice = OutputDevice.GetByName("Microsoft GS Wavetable Synth");
         }
-
         public static void PlayNote(byte noteNumber)
         {
             var noteOn = new NoteOnEvent(new SevenBitNumber(noteNumber), new SevenBitNumber(noteNumber));

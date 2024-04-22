@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Timers;
+using System.Windows.Input;
 
 
 
@@ -22,6 +23,7 @@ namespace Wpf_Karelia
         BitmapImage bitmapImageMine;
         Timer timer;
         DateTime startTime;
+        bool isStarted;
 
         public MainWindow()
         {
@@ -32,18 +34,26 @@ namespace Wpf_Karelia
             bitmapImageMine = new BitmapImage(new Uri("Mine.jpg", UriKind.Relative));
 
             timer = new Timer();
-            timer.Interval = 1000; 
+            timer.Interval = 1000;
             timer.Elapsed += TimerElapsed;
 
             InitializeComponent();
             StartTheGame();
             Methods.InitializeSound();
+        }
 
-            ShowScore();
+        private void grid_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (isStarted) {return;}
+            ySize -= e.Delta/120;
+            xSize -= e.Delta/120;
+            BombsCount = ySize * xSize / 8;
+            gridMain.Children.Clear();
+            StartTheGame();
         }
 
         private void ShowScore()
-        { scoreText.Text = string.Format("{0}", BombsCount); }
+        { scoreText.Text = string.Format("COUNT {0}", BombsCount); }
 
         private void TimerElapsed(object sender, ElapsedEventArgs e)
         {
@@ -63,6 +73,8 @@ namespace Wpf_Karelia
            
             startTime = DateTime.Now;
             timer.Start();
+            ShowScore();
+            gridMain.MouseWheel += grid_MouseWheel;
         }
 
         private void DrawGrid()
@@ -115,10 +127,10 @@ namespace Wpf_Karelia
             timer.Stop();
             var buttons = gridMain.Children.OfType<Button>();
             foreach (var button in buttons)
-            { DrawCell(button, true); }
+            { DrawCheckCell(button, true); }
         }
 
-        public bool DrawCell(Button btn, bool isGameOver = false)
+        public bool DrawCheckCell(Button btn, bool isGameOver = false)
         {
             int row = (int)btn.GetValue(Grid.RowProperty);
             int column = (int)btn.GetValue(Grid.ColumnProperty);
@@ -219,12 +231,14 @@ namespace Wpf_Karelia
         private void BtnRestart_Click(object sender, RoutedEventArgs e)
         {
             gridMain.Children.Clear();
+            isStarted = false;
             StartTheGame();
         }
 
         void btnToggleRun_Click(object sender, RoutedEventArgs e)
-        {
-            if (DrawCell(sender as Button))
+        { 
+            isStarted = true;
+            if (DrawCheckCell(sender as Button))
             { GameOver(); }
         }
 
