@@ -14,7 +14,7 @@ namespace Wpf_Karelia
 {
     class Methods
     {
-        static OutputDevice outputDevice = OutputDevice.GetByName("Microsoft GS Wavetable Synth");
+        static OutputDevice outputDevice;
         public static int[,] CreateMinesArray(int ySize, int xSize)
         {
             int[,] array = new int[ySize, xSize];
@@ -40,6 +40,11 @@ namespace Wpf_Karelia
             }
             return array;
         }
+        public static void InitializeSound()
+        {
+            outputDevice = OutputDevice.GetByName("Microsoft GS Wavetable Synth");
+        }
+
         public static void PlayNote(byte noteNumber)
         {
             var noteOn = new NoteOnEvent(new SevenBitNumber(noteNumber), new SevenBitNumber(noteNumber));

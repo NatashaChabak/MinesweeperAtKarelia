@@ -6,6 +6,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Timers;
+
 
 
 namespace Wpf_Karelia
@@ -15,17 +17,41 @@ namespace Wpf_Karelia
     {
         Grid gridMain;
         int[,] minesArray;
-        int ySize, xSize;
+        int ySize, xSize, BombsCount;
         BitmapImage bitmapImageFlag;
         BitmapImage bitmapImageMine;
+        Timer timer;
+        DateTime startTime;
+
         public MainWindow()
         {
             ySize = 10;
             xSize = 15;
+            BombsCount = ySize * xSize / 8;
             bitmapImageFlag = new BitmapImage(new Uri("Flag.jpg", UriKind.Relative));
             bitmapImageMine = new BitmapImage(new Uri("Mine.jpg", UriKind.Relative));
+
+            timer = new Timer();
+            timer.Interval = 1000; 
+            timer.Elapsed += TimerElapsed;
+
             InitializeComponent();
             StartTheGame();
+            Methods.InitializeSound();
+
+            ShowScore();
+        }
+
+        private void ShowScore()
+        { scoreText.Text = string.Format("{0}", BombsCount); }
+
+        private void TimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            TimeSpan elapsedTime = e.SignalTime - startTime;
+            Dispatcher.Invoke(() =>
+            {
+                timerText.Text = elapsedTime.ToString(@"hh\:mm\:ss");
+            });
         }
 
         private void StartTheGame()
@@ -34,6 +60,9 @@ namespace Wpf_Karelia
             DrawGrid();
             root.Children.Add(gridMain);
             Grid.SetRow(gridMain, 1);
+           
+            startTime = DateTime.Now;
+            timer.Start();
         }
 
         private void DrawGrid()
@@ -83,6 +112,7 @@ namespace Wpf_Karelia
 
         public void GameOver()
         {
+            timer.Stop();
             var buttons = gridMain.Children.OfType<Button>();
             foreach (var button in buttons)
             { DrawCell(button, true); }
@@ -175,12 +205,15 @@ namespace Wpf_Karelia
                 btn.Content = flagImage;
                 btn.Click -= btnToggleRun_Click;
                 Methods.PlayNote(72);
+                BombsCount -= 1;
                 }
             else 
             {
                 btn.Content = null;
                 btn.Click += btnToggleRun_Click;
+                BombsCount += 1;
             }
+            ShowScore();
         }
 
         private void BtnRestart_Click(object sender, RoutedEventArgs e)
