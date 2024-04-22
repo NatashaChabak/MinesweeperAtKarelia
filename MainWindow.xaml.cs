@@ -6,6 +6,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Timers;
+using System.Windows.Input;
+
 
 
 namespace Wpf_Karelia
@@ -15,25 +18,64 @@ namespace Wpf_Karelia
     {
         Grid gridMain;
         int[,] minesArray;
-        int ySize, xSize;
+        int ySize, xSize, minesCount;
         BitmapImage bitmapImageFlag;
         BitmapImage bitmapImageMine;
+        Timer timer;
+        DateTime startTime;
+        bool isStarted;
+
         public MainWindow()
         {
             ySize = 10;
             xSize = 15;
+
             bitmapImageFlag = new BitmapImage(new Uri("Flag.jpg", UriKind.Relative));
             bitmapImageMine = new BitmapImage(new Uri("Mine.jpg", UriKind.Relative));
+
+            timer = new Timer();
+            timer.Interval = 1000;
+            timer.Elapsed += TimerElapsed;
+
             InitializeComponent();
             StartTheGame();
+         }
+
+
+        private void grid_MouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (isStarted) {return;}
+            ySize -= e.Delta/120;
+            xSize -= e.Delta/120;
+
+            gridMain.Children.Clear();
+            StartTheGame();
+        }
+
+        private void ShowScore()
+        { scoreText.Text = string.Format("COUNT {0}", minesCount); }
+
+        private void TimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            TimeSpan elapsedTime = e.SignalTime - startTime;
+            Dispatcher.Invoke(() =>
+            {
+                timerText.Text = elapsedTime.ToString(@"hh\:mm\:ss");
+            });
         }
 
         private void StartTheGame()
         {
-            minesArray = Methods.CreateMinesArray(ySize, xSize);
+            minesCount = ySize * xSize / 8;
+            minesArray = Methods.CreateMinesArray(ySize, xSize, minesCount);
             DrawGrid();
             root.Children.Add(gridMain);
             Grid.SetRow(gridMain, 1);
+           
+            startTime = DateTime.Now;
+            timer.Start();
+            ShowScore();
+            gridMain.MouseWheel += grid_MouseWheel;
         }
 
         private void DrawGrid()
@@ -83,12 +125,13 @@ namespace Wpf_Karelia
 
         public void GameOver()
         {
+            timer.Stop();
             var buttons = gridMain.Children.OfType<Button>();
             foreach (var button in buttons)
-            { DrawCell(button, true); }
+            { DrawCheckCell(button, true); }
         }
 
-        public bool DrawCell(Button btn, bool isGameOver = false)
+        public bool DrawCheckCell(Button btn, bool isGameOver = false)
         {
             int row = (int)btn.GetValue(Grid.RowProperty);
             int column = (int)btn.GetValue(Grid.ColumnProperty);
@@ -175,23 +218,28 @@ namespace Wpf_Karelia
                 btn.Content = flagImage;
                 btn.Click -= btnToggleRun_Click;
                 Methods.PlayNote(72);
+                minesCount -= 1;
                 }
             else 
             {
                 btn.Content = null;
                 btn.Click += btnToggleRun_Click;
+                minesCount += 1;
             }
+            ShowScore();
         }
 
         private void BtnRestart_Click(object sender, RoutedEventArgs e)
         {
             gridMain.Children.Clear();
+            isStarted = false;
             StartTheGame();
         }
 
         void btnToggleRun_Click(object sender, RoutedEventArgs e)
-        {
-            if (DrawCell(sender as Button))
+        { 
+            isStarted = true;
+            if (DrawCheckCell(sender as Button))
             { GameOver(); }
         }
 
