@@ -13,7 +13,7 @@
 
         </Grid.RowDefinitions>
         <TextBlock x:Name="timerText" Text="00:00:00" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <Button Content="RESTART" Background = "LightGreen" HorizontalAlignment="Center" VerticalContentAlignment="Center" FontSize="22" VerticalAlignment="Top" Click="BtnRestart_Click"/>
+        <Button Content="RESTART" Background = "LightGreen" HorizontalAlignment="Center" VerticalContentAlignment="Center" FontSize="22" VerticalAlignment="Top" Click="Btn_RestartClick"/>
         <TextBlock x:Name="scoreText" Text="00" FontSize="24"  HorizontalAlignment="Right" VerticalAlignment="Center"/>
     </Grid>
 </Window>
