@@ -1,14 +1,11 @@
 ﻿using Melanchall.DryWetMidi.Common;
+using Melanchall.DryWetMidi.Composing;
 using Melanchall.DryWetMidi.Core;
+using Melanchall.DryWetMidi.Interaction;
 using Melanchall.DryWetMidi.Multimedia;
+using Melanchall.DryWetMidi.MusicTheory;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace Wpf_Karelia
 {
@@ -41,8 +38,10 @@ namespace Wpf_Karelia
         }
         public static void PlayNote(byte noteNumber)
         {
-            var noteOn = new NoteOnEvent(new SevenBitNumber(noteNumber), new SevenBitNumber(noteNumber));
-            var midiFile = new MidiFile(new TrackChunk(noteOn));
+            noteNumber = noteNumber > 127 ? (byte)127 : noteNumber;
+            var noteOn = new NoteOnEvent((SevenBitNumber)noteNumber, (SevenBitNumber)80);
+            var noteOff = new NoteOffEvent((SevenBitNumber)noteNumber, (SevenBitNumber)0) { DeltaTime = 40};
+            var midiFile = new MidiFile(new TrackChunk(new SetTempoEvent(60000)), new TrackChunk( noteOn, noteOff));
             var playback = midiFile.GetPlayback(outputDevice);
             playback.Play();
         }

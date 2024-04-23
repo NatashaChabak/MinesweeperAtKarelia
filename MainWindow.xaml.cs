@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Timers;
 using System.Windows.Input;
+using System.Collections.Generic;
 
 
 
@@ -177,7 +178,12 @@ namespace Wpf_Karelia
         }
         private void AddContentToButton(Button btn, int cell)
         {
-            if (cell != 0) btn.Content = cell; else btn.Content = "";
+            if (cell != 0)
+            {
+                btn.Content = cell;
+                Methods.PlayNote((byte)(2*cell + 48));
+            }
+            else btn.Content = "";
             byte color = (byte)(255 / ((cell==0) ? 0.2 : cell*2));
             btn.Background = new SolidColorBrush(Color.FromArgb(50, 255, 255, 255));
             btn.Foreground = new SolidColorBrush(Color.FromArgb(255, 20, color, 20));
@@ -185,7 +191,6 @@ namespace Wpf_Karelia
             btn.FontWeight = FontWeights.Bold;
             btn.Click -= Btn_Click;
             btn.MouseRightButtonDown -= Btn_RightClick;
-            Methods.PlayNote((byte)(cell + 60));
         }
         private Button GetButtonFromGrid(Grid grid, int row, int column)
         {
@@ -214,7 +219,7 @@ namespace Wpf_Karelia
                 flagImage.Source = bitmapImageFlag;
                 btn.Content = flagImage;
                 btn.Click -= Btn_Click;
-                Methods.PlayNote(72);
+                Methods.PlayNote((byte)(72 - minesCount));
                 minesCount -= 1;
                 }
             else 
@@ -225,7 +230,7 @@ namespace Wpf_Karelia
             }
             ShowScore();
         }
-        private void Btn_RestartClick(object sender, RoutedEventArgs e)
+        private void BtnRestart_Click(object sender, RoutedEventArgs e)
         {
             gridMain.Children.Clear();
             isStarted = false;
