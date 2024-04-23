@@ -36,11 +36,11 @@ namespace Wpf_Karelia
             }
             return array;
         }
-        public static void PlayNote(byte noteNumber)
+        public static void PlayNote(byte noteNumber, int deltaTime = 40)
         {
             noteNumber = noteNumber > 127 ? (byte)127 : noteNumber;
             var noteOn = new NoteOnEvent((SevenBitNumber)noteNumber, (SevenBitNumber)80);
-            var noteOff = new NoteOffEvent((SevenBitNumber)noteNumber, (SevenBitNumber)0) { DeltaTime = 40};
+            var noteOff = new NoteOffEvent((SevenBitNumber)noteNumber, (SevenBitNumber)0) { DeltaTime = deltaTime};
             var midiFile = new MidiFile(new TrackChunk(new SetTempoEvent(60000)), new TrackChunk( noteOn, noteOff));
             var playback = midiFile.GetPlayback(outputDevice);
             playback.Play();

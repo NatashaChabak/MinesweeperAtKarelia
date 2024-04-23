@@ -111,6 +111,7 @@ namespace Wpf_Karelia
                     break;
                 default:
                     AddContentToButton(btn, cell);
+                    Methods.PlayNote((byte)(2 * cell + 48));
                     break;
             }
             btn.Click -= Btn_Click;
@@ -124,18 +125,23 @@ namespace Wpf_Karelia
             if (cell >= 0 && btn.Content == null)
             {
                 AddContentToButton(btn, cell);
-                if (cell == 0)
-                { 
-                for (int i = -1; i < 2; i++)
+                if (cell != 0)
                 {
-                    for (int j = -1; j < 2; j++)
+                    byte cellbyte = (byte)((48 + row + column));
+                    Methods.PlayNote(cellbyte, 10);
+                }
+                else
+                {
+                    for (int i = -1; i < 2; i++)
                     {
-                        if (row + i >= 0 && row + i < ySize && column + j >= 0 && column + j < xSize)
+                        for (int j = -1; j < 2; j++)
                         {
-                            DrawCellAdjacentToZero(row + i, column + j);
+                            if (row + i >= 0 && row + i < ySize && column + j >= 0 && column + j < xSize)
+                            {
+                                DrawCellAdjacentToZero(row + i, column + j);
+                            }
                         }
                     }
-                }
                 }
             }
         }
@@ -144,6 +150,8 @@ namespace Wpf_Karelia
             var buttons = gridMain.Children.OfType<Button>();
             foreach (var btn in buttons)
             {
+                btn.Click -= Btn_Click;
+                btn.MouseRightButtonDown -= Btn_RightClick;
                 int row = (int)btn.GetValue(Grid.RowProperty);
                 int column = (int)btn.GetValue(Grid.ColumnProperty);
                 int cell = minesArray[row, column];
@@ -153,8 +161,8 @@ namespace Wpf_Karelia
                     mineImage.Source = bitmapImageMine;
                     mineImage.Stretch = Stretch.UniformToFill;
                     btn.Content = mineImage;
-                    byte minebyte = (byte)(30 + ((byte)row + (byte)column) / 2);
-                    Methods.PlayNote(minebyte);
+                    byte minebyte = ((byte)((30 + (row + column) / 2)));
+                    Methods.PlayNote(minebyte, 20);
                 }
             }
         }
@@ -178,11 +186,7 @@ namespace Wpf_Karelia
         }
         private void AddContentToButton(Button btn, int cell)
         {
-            if (cell != 0)
-            {
-                btn.Content = cell;
-                Methods.PlayNote((byte)(2*cell + 48));
-            }
+            if (cell != 0) btn.Content = cell;
             else btn.Content = "";
             byte color = (byte)(255 / ((cell==0) ? 0.2 : cell*2));
             btn.Background = new SolidColorBrush(Color.FromArgb(50, 255, 255, 255));
