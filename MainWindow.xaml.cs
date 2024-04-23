@@ -217,7 +217,6 @@ namespace Wpf_Karelia
              {
                 Image flagImage = new Image();
                 flagImage.Source = bitmapImageFlag;
-                flagImage.Stretch = Stretch.UniformToFill;
                 btn.Content = flagImage;
                 btn.Click -= Btn_Click;
                 Methods.PlayNote((byte)(72 - minesCount));
