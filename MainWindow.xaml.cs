@@ -19,9 +19,8 @@ namespace Wpf_Karelia
     {
         Grid gridMain;
         int[,] minesArray;
-        int ySize, xSize, minesCount;
-        BitmapImage bitmapImageFlag;
-        BitmapImage bitmapImageMine;
+        int ySize, xSize, minesCount, unOpenedCellsCount;
+        BitmapImage bitmapImageFlag, bitmapImageMine;
         Timer timer;
         DateTime startTime;
         bool isStarted;
@@ -46,10 +45,10 @@ namespace Wpf_Karelia
         {
             minesCount = ySize * xSize / 8;
             minesArray = Methods.CreateMinesArray(ySize, xSize, minesCount);
-            DrawGrid();
+            unOpenedCellsCount = ySize * xSize - minesCount;
+            gridMain = DrawGrid();
             root.Children.Add(gridMain);
             Grid.SetRow(gridMain, 1);
-
             startTime = DateTime.Now;
             timer.Start();
             ShowScore();
@@ -57,9 +56,24 @@ namespace Wpf_Karelia
         }
         private void GameOver()
         {
-            DrawAllMines();
             timer.Stop();
+            DisableButtons(true);
         }
+
+        private void WonTheGame()
+        {
+            timer.Stop();
+            var winText = new TextBlock();
+            winText.HorizontalAlignment = HorizontalAlignment.Center;
+            winText.VerticalAlignment = VerticalAlignment.Center;
+            winText.FontSize = 38;
+            winText.Text = "Congrats";
+            root.Children.Add(winText);
+            Grid.SetRow(winText, 1);
+            DisableButtons(false);
+        }
+
+
         private void ShowScore()
         { scoreText.Text = string.Format("COUNT {0}", minesCount); }
         private void TimerElapsed(object sender, ElapsedEventArgs e)
@@ -72,17 +86,17 @@ namespace Wpf_Karelia
         }
 
         //======================================================Drawing=================================================
-        private void DrawGrid()
+        private Grid DrawGrid()
         {
-            gridMain = new Grid();
-            gridMain.ShowGridLines = false;
+            var grid = new Grid();
+            grid.ShowGridLines = false;
             for (int i = 0; i < xSize; i++)
             {
-                gridMain.ColumnDefinitions.Add(new ColumnDefinition());
+                grid.ColumnDefinitions.Add(new ColumnDefinition());
             }
             for (int i = 0; i < ySize; i++)
             {
-                gridMain.RowDefinitions.Add(new RowDefinition());
+                grid.RowDefinitions.Add(new RowDefinition());
             }
             for (int i = 0; i < xSize; i++)
             {
@@ -91,9 +105,10 @@ namespace Wpf_Karelia
                     Button button = AddButton();
                     Grid.SetColumn(button, i);
                     Grid.SetRow(button, j);
-                    gridMain.Children.Add(button);
+                    grid.Children.Add(button);
                 }
             }
+            return grid;
 
         }
         private void DrawCheckCell(Button btn)
@@ -145,25 +160,30 @@ namespace Wpf_Karelia
                 }
             }
         }
-        private void DrawAllMines()
+        private void DisableButtons(bool isLost)
         {
             var buttons = gridMain.Children.OfType<Button>();
             foreach (var btn in buttons)
             {
                 btn.Click -= Btn_Click;
                 btn.MouseRightButtonDown -= Btn_RightClick;
-                int row = (int)btn.GetValue(Grid.RowProperty);
-                int column = (int)btn.GetValue(Grid.ColumnProperty);
-                int cell = minesArray[row, column];
-                if (cell == -1)
-                {
-                    Image mineImage = new Image();
-                    mineImage.Source = bitmapImageMine;
-                    mineImage.Stretch = Stretch.UniformToFill;
-                    btn.Content = mineImage;
-                    byte minebyte = ((byte)((30 + (row + column) / 2)));
-                    Methods.PlayNote(minebyte, 20);
-                }
+                if (isLost) DrawMine(btn);
+            }
+        }
+
+        private void DrawMine(Button btn)
+        {
+            int row = (int)btn.GetValue(Grid.RowProperty);
+            int column = (int)btn.GetValue(Grid.ColumnProperty);
+            int cell = minesArray[row, column];
+            if (cell == -1)
+            {
+                Image mineImage = new Image();
+                mineImage.Source = bitmapImageMine;
+                mineImage.Stretch = Stretch.UniformToFill;
+                btn.Content = mineImage;
+                byte minebyte = ((byte)((30 + (row + column) / 2)));
+                Methods.PlayNote(minebyte, 20);
             }
         }
 
@@ -195,7 +215,10 @@ namespace Wpf_Karelia
             btn.FontWeight = FontWeights.Bold;
             btn.Click -= Btn_Click;
             btn.MouseRightButtonDown -= Btn_RightClick;
+            if (--unOpenedCellsCount == 0) { WonTheGame(); }
+
         }
+
         private Button GetButtonFromGrid(Grid grid, int row, int column)
         {
             foreach (UIElement child in grid.Children)
@@ -219,6 +242,7 @@ namespace Wpf_Karelia
             Button btn = sender as Button;
             if (btn.Content == null)
              {
+                if (minesCount == 0 ) { return; } 
                 Image flagImage = new Image();
                 flagImage.Source = bitmapImageFlag;
                 btn.Content = flagImage;
@@ -243,8 +267,8 @@ namespace Wpf_Karelia
         private void GridMain_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (isStarted) { return; }
-            ySize -= e.Delta / 120;
-            xSize -= e.Delta / 120;
+            ySize += e.Delta / 120;
+            xSize += e.Delta / 120;
 
             gridMain.Children.Clear();
             StartTheGame();
