@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Timers;
 using System.Windows.Input;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Contexts;
 
 
 
@@ -19,23 +20,24 @@ namespace Wpf_Karelia
     {
         Grid gridMain;
         int[,] minesArray;
-        int ySize, xSize, minesCount, unOpenedCellsCount;
+        int ySize = 10;
+        int ratio = 16;
+        int xSize, minesCount, unOpenedCellsCount;
         BitmapImage bitmapImageFlag, bitmapImageMine;
         Timer timer;
         DateTime startTime;
         bool isStarted;
+        TextBlock winText;
 
         public MainWindow()
         {
-            ySize = 10;
-            xSize = 15;
-
             bitmapImageFlag = new BitmapImage(new Uri("Flag.jpg", UriKind.Relative));
             bitmapImageMine = new BitmapImage(new Uri("Mine.jpg", UriKind.Relative));
 
             timer = new Timer();
             timer.Interval = 1000;
             timer.Elapsed += TimerElapsed;
+            Methods.PlayNote(0); 
 
             InitializeComponent();
             StartTheGame();
@@ -43,8 +45,9 @@ namespace Wpf_Karelia
 
         private void StartTheGame()
         {
+            xSize = ySize * ratio / 10;
             minesCount = ySize * xSize / 8;
-            minesArray = Methods.CreateMinesArray(ySize, xSize, minesCount);
+            minesArray = Methods.CreateMinesArray(minesCount, ySize, xSize);
             unOpenedCellsCount = ySize * xSize - minesCount;
             gridMain = DrawGrid();
             root.Children.Add(gridMain);
@@ -63,11 +66,12 @@ namespace Wpf_Karelia
         private void WonTheGame()
         {
             timer.Stop();
-            var winText = new TextBlock();
+            winText = new TextBlock();
             winText.HorizontalAlignment = HorizontalAlignment.Center;
             winText.VerticalAlignment = VerticalAlignment.Center;
             winText.FontSize = 38;
             winText.Text = "Congrats";
+            winText.Background = Brushes.Wheat;
             root.Children.Add(winText);
             Grid.SetRow(winText, 1);
             DisableButtons(false);
@@ -90,7 +94,7 @@ namespace Wpf_Karelia
         {
             var grid = new Grid();
             grid.ShowGridLines = false;
-            for (int i = 0; i < xSize; i++)
+            for (int i = 0; i < xSize ; i++)
             {
                 grid.ColumnDefinitions.Add(new ColumnDefinition());
             }
@@ -262,14 +266,14 @@ namespace Wpf_Karelia
         {
             gridMain.Children.Clear();
             isStarted = false;
+            root.Children.Remove(winText);
             StartTheGame();
         }
         private void GridMain_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (isStarted) { return; }
-            ySize += e.Delta / 120;
-            xSize += e.Delta / 120;
-
+            if (isStarted)  return;
+            ySize -= e.Delta / 120;
+            ySize = (ySize < 4) ? 4 : ySize;
             gridMain.Children.Clear();
             StartTheGame();
         }

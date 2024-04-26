@@ -12,7 +12,7 @@ namespace Wpf_Karelia
     class Methods
     {
         static OutputDevice outputDevice = OutputDevice.GetByName("Microsoft GS Wavetable Synth");
-        public static int[,] CreateMinesArray(int ySize, int xSize, int minesCount)
+        public static int[,] CreateMinesArray(int minesCount, int ySize = 10, int xSize = 15)
         {
             int[,] array = new int[ySize, xSize];
             Random rnd = new Random();
