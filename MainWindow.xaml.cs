@@ -9,6 +9,7 @@ using System.Windows.Media.Imaging;
 using System.Timers;
 using System.Windows.Input;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Contexts;
 
 
 
@@ -19,24 +20,24 @@ namespace Wpf_Karelia
     {
         Grid gridMain;
         int[,] minesArray;
-        int ySize, xSize, minesCount;
-        BitmapImage bitmapImageFlag;
-        BitmapImage bitmapImageMine;
+        int ySize = 10;
+        int ratio = 16;
+        int xSize, minesCount, unOpenedCellsCount;
+        BitmapImage bitmapImageFlag, bitmapImageMine;
         Timer timer;
         DateTime startTime;
         bool isStarted;
+        TextBlock winText;
 
         public MainWindow()
         {
-            ySize = 10;
-            xSize = 15;
-
             bitmapImageFlag = new BitmapImage(new Uri("Flag.jpg", UriKind.Relative));
             bitmapImageMine = new BitmapImage(new Uri("Mine.jpg", UriKind.Relative));
 
             timer = new Timer();
             timer.Interval = 1000;
             timer.Elapsed += TimerElapsed;
+            Methods.PlayNote(0); 
 
             InitializeComponent();
             StartTheGame();
@@ -44,12 +45,13 @@ namespace Wpf_Karelia
 
         private void StartTheGame()
         {
+            xSize = ySize * ratio / 10;
             minesCount = ySize * xSize / 8;
-            minesArray = Methods.CreateMinesArray(ySize, xSize, minesCount);
-            DrawGrid();
+            minesArray = Methods.CreateMinesArray(minesCount, ySize, xSize);
+            unOpenedCellsCount = ySize * xSize - minesCount;
+            gridMain = DrawGrid();
             root.Children.Add(gridMain);
             Grid.SetRow(gridMain, 1);
-
             startTime = DateTime.Now;
             timer.Start();
             ShowScore();
@@ -57,9 +59,25 @@ namespace Wpf_Karelia
         }
         private void GameOver()
         {
-            DrawAllMines();
             timer.Stop();
+            DisableButtons(true);
         }
+
+        private void WonTheGame()
+        {
+            timer.Stop();
+            winText = new TextBlock();
+            winText.HorizontalAlignment = HorizontalAlignment.Center;
+            winText.VerticalAlignment = VerticalAlignment.Center;
+            winText.FontSize = 38;
+            winText.Text = "Congrats";
+            winText.Background = Brushes.Wheat;
+            root.Children.Add(winText);
+            Grid.SetRow(winText, 1);
+            DisableButtons(false);
+        }
+
+
         private void ShowScore()
         { scoreText.Text = string.Format("COUNT {0}", minesCount); }
         private void TimerElapsed(object sender, ElapsedEventArgs e)
@@ -72,17 +90,17 @@ namespace Wpf_Karelia
         }
 
         //======================================================Drawing=================================================
-        private void DrawGrid()
+        private Grid DrawGrid()
         {
-            gridMain = new Grid();
-            gridMain.ShowGridLines = false;
-            for (int i = 0; i < xSize; i++)
+            var grid = new Grid();
+            grid.ShowGridLines = false;
+            for (int i = 0; i < xSize ; i++)
             {
-                gridMain.ColumnDefinitions.Add(new ColumnDefinition());
+                grid.ColumnDefinitions.Add(new ColumnDefinition());
             }
             for (int i = 0; i < ySize; i++)
             {
-                gridMain.RowDefinitions.Add(new RowDefinition());
+                grid.RowDefinitions.Add(new RowDefinition());
             }
             for (int i = 0; i < xSize; i++)
             {
@@ -91,9 +109,10 @@ namespace Wpf_Karelia
                     Button button = AddButton();
                     Grid.SetColumn(button, i);
                     Grid.SetRow(button, j);
-                    gridMain.Children.Add(button);
+                    grid.Children.Add(button);
                 }
             }
+            return grid;
 
         }
         private void DrawCheckCell(Button btn)
@@ -145,25 +164,30 @@ namespace Wpf_Karelia
                 }
             }
         }
-        private void DrawAllMines()
+        private void DisableButtons(bool isLost)
         {
             var buttons = gridMain.Children.OfType<Button>();
             foreach (var btn in buttons)
             {
                 btn.Click -= Btn_Click;
                 btn.MouseRightButtonDown -= Btn_RightClick;
-                int row = (int)btn.GetValue(Grid.RowProperty);
-                int column = (int)btn.GetValue(Grid.ColumnProperty);
-                int cell = minesArray[row, column];
-                if (cell == -1)
-                {
-                    Image mineImage = new Image();
-                    mineImage.Source = bitmapImageMine;
-                    mineImage.Stretch = Stretch.UniformToFill;
-                    btn.Content = mineImage;
-                    byte minebyte = ((byte)((30 + (row + column) / 2)));
-                    Methods.PlayNote(minebyte, 20);
-                }
+                if (isLost) DrawMine(btn);
+            }
+        }
+
+        private void DrawMine(Button btn)
+        {
+            int row = (int)btn.GetValue(Grid.RowProperty);
+            int column = (int)btn.GetValue(Grid.ColumnProperty);
+            int cell = minesArray[row, column];
+            if (cell == -1)
+            {
+                Image mineImage = new Image();
+                mineImage.Source = bitmapImageMine;
+                mineImage.Stretch = Stretch.UniformToFill;
+                btn.Content = mineImage;
+                byte minebyte = ((byte)((30 + (row + column) / 2)));
+                Methods.PlayNote(minebyte, 20);
             }
         }
 
@@ -195,7 +219,10 @@ namespace Wpf_Karelia
             btn.FontWeight = FontWeights.Bold;
             btn.Click -= Btn_Click;
             btn.MouseRightButtonDown -= Btn_RightClick;
+            if (--unOpenedCellsCount == 0) { WonTheGame(); }
+
         }
+
         private Button GetButtonFromGrid(Grid grid, int row, int column)
         {
             foreach (UIElement child in grid.Children)
@@ -219,6 +246,7 @@ namespace Wpf_Karelia
             Button btn = sender as Button;
             if (btn.Content == null)
              {
+                if (minesCount == 0 ) { return; } 
                 Image flagImage = new Image();
                 flagImage.Source = bitmapImageFlag;
                 btn.Content = flagImage;
@@ -238,14 +266,14 @@ namespace Wpf_Karelia
         {
             gridMain.Children.Clear();
             isStarted = false;
+            root.Children.Remove(winText);
             StartTheGame();
         }
         private void GridMain_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (isStarted) { return; }
+            if (isStarted)  return;
             ySize -= e.Delta / 120;
-            xSize -= e.Delta / 120;
-
+            ySize = (ySize < 4) ? 4 : ySize;
             gridMain.Children.Clear();
             StartTheGame();
         }
