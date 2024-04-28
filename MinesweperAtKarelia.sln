@@ -1,9 +1,9 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34701.34
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinesweeperAtKarelia", "MinesweeperAtKarelia.csproj", "{51036EB6-ABEC-46AF-90BD-D604F11C6FEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinesweeperAtKarelia", "MinesweeperAtKarelia.csproj", "{51036EB6-ABEC-46AF-90BD-D604F11C6FEF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
