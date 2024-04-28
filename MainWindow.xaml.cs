@@ -15,7 +15,6 @@ using System.Runtime.Remoting.Contexts;
 
 namespace Wpf_Karelia
 {
-
     public partial class MainWindow : Window
     {
         Grid gridMain;
@@ -75,6 +74,7 @@ namespace Wpf_Karelia
             root.Children.Add(winText);
             Grid.SetRow(winText, 1);
             DisableButtons(false);
+            Methods.PlayWinChordProgression(new Random().Next(48, 60));
         }
 
 
@@ -274,6 +274,7 @@ namespace Wpf_Karelia
             if (isStarted)  return;
             ySize -= e.Delta / 120;
             ySize = (ySize < 4) ? 4 : ySize;
+            Methods.PlayGlissandoPentatonic(ySize * 7, (e.Delta > 0 ? 1 : -1 ) * 20, 50);
             gridMain.Children.Clear();
             StartTheGame();
         }
