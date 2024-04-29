@@ -1,6 +1,4 @@
-﻿using Melanchall.DryWetMidi.Multimedia;
-using System;
-using System.Data.Common;
+﻿using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,8 +7,6 @@ using System.Windows.Media.Imaging;
 using System.Timers;
 using System.Windows.Input;
 using System.Collections.Generic;
-
-
 
 namespace Wpf_Karelia
 {
@@ -22,7 +18,7 @@ namespace Wpf_Karelia
         int ratio = 16;
         int xSize, minesCount, unOpenedCellsCount;
         BitmapImage bitmapImageFlag, bitmapImageMine;
-        Timer timer;
+        System.Timers.Timer timer;
         DateTime startTime;
         bool isStarted;
         TextBlock winText;
@@ -32,7 +28,7 @@ namespace Wpf_Karelia
             bitmapImageFlag = new BitmapImage(new Uri("Flag.jpg", UriKind.Relative));
             bitmapImageMine = new BitmapImage(new Uri("Mine.jpg", UriKind.Relative));
 
-            timer = new Timer();
+            timer = new System.Timers.Timer();
             timer.Interval = 1000;
             timer.Elapsed += TimerElapsed;
             Methods.PlayNote(0); 
@@ -145,8 +141,8 @@ namespace Wpf_Karelia
                 AddContentToButton(btn, cell);
                 if (cell != 0)
                 {
-                    byte cellbyte = (byte)((48 + row + column));
-                    Methods.PlayNote(cellbyte, 10);
+                    byte cellByte = (byte)((48 + row + column));
+                    Methods.PlayNote(cellByte, 10);
                 }
                 else
                 {
@@ -183,6 +179,8 @@ namespace Wpf_Karelia
             {
                 Image mineImage = new Image();
                 mineImage.Source = bitmapImageMine;
+                mineImage.Height = 0.8 * btn.ActualHeight;
+                mineImage.Width = 0.8 * btn.ActualWidth;
                 mineImage.Stretch = Stretch.UniformToFill;
                 btn.Content = mineImage;
                 byte minebyte = ((byte)((30 + (row + column) / 2)));
@@ -194,13 +192,14 @@ namespace Wpf_Karelia
         private Button AddButton()
         {
             Button button = new Button();
-            button.Height = 50;
-            button.Width = 50;
+            button.MinHeight = 50;
+            button.MinWidth = 50;
             button.Background = Brushes.LightGray;
+            button.HorizontalAlignment = HorizontalAlignment.Stretch;
+            button.VerticalAlignment = VerticalAlignment.Stretch;
 
             button.Foreground = Brushes.Black;
             button.BorderBrush = Brushes.Gray;
-
             button.BorderThickness = new System.Windows.Thickness(0, 0, 5, 5);
 
             button.Click += Btn_Click;
@@ -215,11 +214,11 @@ namespace Wpf_Karelia
             btn.Background = new SolidColorBrush(Color.FromArgb(50, 255, 255, 255));
             btn.Foreground = new SolidColorBrush(Color.FromArgb(255, 20, color, 20));
             btn.FontSize = 18;
+           // btn.FontStretch = FontStretches.ExtraExpanded;
             btn.FontWeight = FontWeights.Bold;
             btn.Click -= Btn_Click;
             btn.MouseRightButtonDown -= Btn_RightClick;
             if (--unOpenedCellsCount == 0) { WonTheGame(); }
-
         }
 
         private Button GetButtonFromGrid(Grid grid, int row, int column)
@@ -248,6 +247,7 @@ namespace Wpf_Karelia
                 if (minesCount == 0 ) { return; } 
                 Image flagImage = new Image();
                 flagImage.Source = bitmapImageFlag;
+                flagImage.HorizontalAlignment = HorizontalAlignment.Stretch;
                 btn.Content = flagImage;
                 btn.Click -= Btn_Click;
                 Methods.PlayNote((byte)(72 - minesCount));
@@ -263,6 +263,7 @@ namespace Wpf_Karelia
         }
         private void BtnRestart_Click(object sender, RoutedEventArgs e)
         {
+            Methods.PlayGlissando(new Random().Next(60, 72), 24);
             gridMain.Children.Clear();
             isStarted = false;
             root.Children.Remove(winText);

@@ -49,6 +49,7 @@ namespace Wpf_Karelia
         {
             startNote = startNote > 100 ? (byte)100 : startNote;
             int endNote = startNote + relativeSpan;
+            endNote = endNote > 127 ? (byte)127 : endNote;
             var notes = new List<MidiEvent>();
             int step = startNote > endNote ? -1 : 1;
             for (int i = startNote; i != endNote; i += step)
@@ -81,42 +82,42 @@ namespace Wpf_Karelia
         public static void PlayChordMajor(int startNote = 60, int deltaTime = 200)
         {
             startNote = startNote > 100 ? (byte)100 : startNote;
-            var notes = new List<MidiEvent>();
-            notes.Add(new NoteOnEvent((SevenBitNumber)startNote, (SevenBitNumber)127));
-            notes.Add(new NoteOnEvent((SevenBitNumber)(startNote + 4), (SevenBitNumber)127));
-            notes.Add(new NoteOnEvent((SevenBitNumber)(startNote + 7), (SevenBitNumber)127));
-            notes.Add(new NoteOnEvent((SevenBitNumber)(startNote + 12), (SevenBitNumber)127));
-            notes.Add(new NoteOffEvent((SevenBitNumber)startNote, (SevenBitNumber)0) { DeltaTime = deltaTime });
-            notes.Add(new NoteOffEvent((SevenBitNumber)(startNote + 4), (SevenBitNumber)0) { DeltaTime = deltaTime });
-            notes.Add(new NoteOffEvent((SevenBitNumber)(startNote + 7), (SevenBitNumber)0) { DeltaTime = deltaTime });
-            notes.Add(new NoteOffEvent((SevenBitNumber)(startNote + 12), (SevenBitNumber)0) { DeltaTime = deltaTime });
-            var midiFile = new MidiFile(new TrackChunk(new SetTempoEvent(60000)), new TrackChunk(notes.ToArray()));
+            MidiEvent[] notes =
+            [
+                new NoteOnEvent((SevenBitNumber)startNote, (SevenBitNumber)127),
+                new NoteOnEvent((SevenBitNumber)(startNote + 4), (SevenBitNumber)127),
+                new NoteOnEvent((SevenBitNumber)(startNote + 7), (SevenBitNumber)127),
+                new NoteOffEvent((SevenBitNumber)startNote, (SevenBitNumber)0) { DeltaTime = deltaTime },
+                new NoteOffEvent((SevenBitNumber)(startNote + 4), (SevenBitNumber)0) { DeltaTime = deltaTime },
+                new NoteOffEvent((SevenBitNumber)(startNote + 7), (SevenBitNumber)0) { DeltaTime = deltaTime },
+            ];
+            var midiFile = new MidiFile(new TrackChunk(new SetTempoEvent(60000)), new TrackChunk(notes));
             var playback = midiFile.GetPlayback(outputDevice);
             playback.Play();
         }
         public static void PlayChordMinor(int startNote = 60, int deltaTime = 200)
         {
             startNote = startNote > 100 ? (byte)100 : startNote;
-            var notes = new List<MidiEvent>();
-            notes.Add(new NoteOnEvent((SevenBitNumber)startNote, (SevenBitNumber)127));
-            notes.Add(new NoteOnEvent((SevenBitNumber)(startNote + 3), (SevenBitNumber)127));
-            notes.Add(new NoteOnEvent((SevenBitNumber)(startNote + 7), (SevenBitNumber)127));
-            notes.Add(new NoteOnEvent((SevenBitNumber)(startNote + 12), (SevenBitNumber)127));
-            notes.Add(new NoteOffEvent((SevenBitNumber)startNote, (SevenBitNumber)0) { DeltaTime = deltaTime });
-            notes.Add(new NoteOffEvent((SevenBitNumber)(startNote + 3), (SevenBitNumber)0) { DeltaTime = deltaTime });
-            notes.Add(new NoteOffEvent((SevenBitNumber)(startNote + 7), (SevenBitNumber)0) { DeltaTime = deltaTime });
-            notes.Add(new NoteOffEvent((SevenBitNumber)(startNote + 12), (SevenBitNumber)0) { DeltaTime = deltaTime });
-            var midiFile = new MidiFile(new TrackChunk(new SetTempoEvent(60000)), new TrackChunk(notes.ToArray()));
+            MidiEvent[] notes =
+            [
+                new NoteOnEvent((SevenBitNumber)startNote, (SevenBitNumber)127),
+                new NoteOnEvent((SevenBitNumber)(startNote + 3), (SevenBitNumber)127),
+                new NoteOnEvent((SevenBitNumber)(startNote + 7), (SevenBitNumber)127),
+                new NoteOffEvent((SevenBitNumber)startNote, (SevenBitNumber)0) { DeltaTime = deltaTime },
+                new NoteOffEvent((SevenBitNumber)(startNote + 3), (SevenBitNumber)0) { DeltaTime = deltaTime },
+                new NoteOffEvent((SevenBitNumber)(startNote + 7), (SevenBitNumber)0) { DeltaTime = deltaTime },
+            ];          
+            var midiFile = new MidiFile(new TrackChunk(new SetTempoEvent(60000)), new TrackChunk(notes));
             var playback = midiFile.GetPlayback(outputDevice);
             playback.Play();
         }
         public static void PlayWinChordProgression(int startNote = 60, int deltaTime = 100)
         {
             PlayChordMajor(startNote, deltaTime * 2);
-            PlayChordMinor(startNote + 2, deltaTime * 2);
-            PlayChordMinor(startNote + 4, deltaTime);
+            PlayChordMinor(startNote + 4, deltaTime * 2);
+            PlayChordMinor(startNote - 3, deltaTime);
             PlayChordMajor(startNote + 5, deltaTime);
-            PlayChordMajor(startNote + 7, deltaTime * 4);
+            PlayChordMajor(startNote + 7, deltaTime * 3);
         }
     }
 }

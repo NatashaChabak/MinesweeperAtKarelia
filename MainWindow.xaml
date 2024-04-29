@@ -8,12 +8,12 @@
         Title="Minesweeper" SizeToContent="WidthAndHeight">
     <Grid Name="root" ShowGridLines="True">
         <Grid.RowDefinitions>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
 
         </Grid.RowDefinitions>
         <TextBlock x:Name="timerText" Text="00:00:00" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <Button Content="RESTART" Background = "LightGreen" HorizontalAlignment="Center" VerticalContentAlignment="Center" FontSize="22" VerticalAlignment="Top" Click="BtnRestart_Click"/>
+        <Button Content="RESTART" Background = "LightGreen" HorizontalAlignment="Center"   VerticalContentAlignment="Center"   FontSize="22" VerticalAlignment="Center" Click="BtnRestart_Click"/>
         <TextBlock x:Name="scoreText" Text="00" FontSize="24"  HorizontalAlignment="Right" VerticalAlignment="Center"/>
     </Grid>
 </Window>
