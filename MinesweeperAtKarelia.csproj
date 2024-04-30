@@ -9,6 +9,20 @@
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="FlagFin.jpg" />
+    <None Remove="FlagFin.png" />
+    <None Remove="FlagM.jpg" />
+    <None Remove="Winners.jpeg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="FlagFin.jpg" />
+    <Resource Include="FlagFin.png" />
+    <Resource Include="Winners.jpeg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="FlagM.jpg" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Mine.jpg" />
   </ItemGroup>
   <ItemGroup>

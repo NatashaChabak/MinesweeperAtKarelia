@@ -19,16 +19,17 @@ namespace Wpf_Karelia
         int ySize = 10;
         int ratio = 16;
         int xSize, minesCount, unOpenedCellsCount;
-        BitmapImage bitmapImageFlag, bitmapImageMine;
+        BitmapImage bitmapImageFlag, bitmapImageMine, bitmapImageWin;
         Timer timer;
         DateTime startTime;
         bool isStarted;
-        TextBlock winText;
+        Image winImage;
 
         public MainWindow()
         {
-            bitmapImageFlag = new BitmapImage(new Uri("Flag.jpg", UriKind.Relative));
+            bitmapImageFlag = new BitmapImage(new Uri("FlagFin.png", UriKind.Relative));
             bitmapImageMine = new BitmapImage(new Uri("Mine.jpg", UriKind.Relative));
+            bitmapImageWin = new BitmapImage(new Uri("Winners.jpeg", UriKind.Relative));
 
             timer = new System.Timers.Timer();
             timer.Interval = 1000;
@@ -63,23 +64,18 @@ namespace Wpf_Karelia
         private void WonTheGame()
         {
             timer.Stop();
-            winText = new TextBlock();
-            winText.HorizontalAlignment = HorizontalAlignment.Stretch;
-            winText.VerticalAlignment = VerticalAlignment.Stretch;
-            winText.FontSize = gridMain.ActualHeight;
-          
-            winText.Text = "Congrats";
-            winText.Background = Brushes.AliceBlue;
-            root.Children.Add(winText);
-          
-            Grid.SetRow(winText, 1);
+            winImage = new Image();
+            winImage.Source = bitmapImageWin;
+            SetImageProperties(winImage, this.ActualHeight, this.ActualWidth);     
+            root.Children.Add(winImage);        
+            Grid.SetRow(winImage, 1);
             DisableButtons(false);
             Methods.PlayWinChordProgression(new Random().Next(48, 60));
         }
 
 
         private void ShowScore()
-        { scoreText.Text = string.Format("Count: {0}", minesCount); }
+        { scoreText.Text = string.Format("Mines: {0}", minesCount); }
         private void TimerElapsed(object sender, ElapsedEventArgs e)
         {
             TimeSpan elapsedTime = e.SignalTime - startTime;
@@ -175,13 +171,13 @@ namespace Wpf_Karelia
             }
         }
 
-        private void SetImageProperties(Image image, Button btn)
+        private void SetImageProperties(Image image, double ActualHeight, double ActualWidth)
         {
-            image.Height = 0.8 * btn.ActualHeight;
-            image.Width = 0.8 * btn.ActualWidth;
-            image.Stretch = Stretch.UniformToFill;
-            image.HorizontalAlignment = HorizontalAlignment.Stretch;
-            image.VerticalAlignment = VerticalAlignment.Stretch;
+           // image.Height = 0.8 * ActualHeight;
+           // image.Width = 0.8 * ActualWidth;
+            //image.Stretch = Stretch.Fill;
+           image.HorizontalAlignment = HorizontalAlignment.Stretch;
+           image.VerticalAlignment = VerticalAlignment.Stretch;
         }
 
         private void DrawMine(Button btn)
@@ -193,7 +189,7 @@ namespace Wpf_Karelia
             {
                 Image mineImage = new Image();
                 mineImage.Source = bitmapImageMine;
-                SetImageProperties(mineImage, btn);
+                SetImageProperties(mineImage, btn.ActualHeight, btn.ActualWidth);
                 btn.Content = mineImage;
                 byte minebyte = ((byte)((30 + (row + column) / 2)));
                 Methods.PlayNote(minebyte, 20);
@@ -298,11 +294,11 @@ namespace Wpf_Karelia
         {
             Button btn = sender as Button;
             if (btn.Content == null)
-             {
+            {
                 if (minesCount == 0 ) { return; } 
                 Image flagImage = new Image();
                 flagImage.Source = bitmapImageFlag;
-                SetImageProperties(flagImage, btn);
+                SetImageProperties(flagImage, btn.ActualHeight, btn.ActualWidth);
                 btn.Content = flagImage;
                 btn.Click -= Btn_Click;
                 Methods.PlayNote((byte)(72 - minesCount));
@@ -321,14 +317,14 @@ namespace Wpf_Karelia
             Methods.PlayGlissando(new Random().Next(60, 72), 24);
             gridMain.Children.Clear();
             isStarted = false;
-            root.Children.Remove(winText);
+            root.Children.Remove(winImage);
             StartTheGame();
         }
         private void GridMain_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (isStarted)  return;
             ySize -= e.Delta / 120;
-            ySize = (ySize < 4) ? 4 : ySize;
+            ySize = (ySize < 5) ? 5 : ySize;
             ySize = (ySize > 15) ? 15 : ySize;
             Methods.PlayGlissandoPentatonic(ySize * 7, (e.Delta > 0 ? 1 : -1 ) * 20, 50);
             gridMain.Children.Clear();
