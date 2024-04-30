@@ -5,15 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wpf_Karelia"
         mc:Ignorable="d"
-        Title="Minesweeper" SizeToContent="WidthAndHeight">
+        Title="Minesweeper"  SizeChanged="Window_SizeChanged" SizeToContent="WidthAndHeight">
     <Grid Name="root" ShowGridLines="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
-
         </Grid.RowDefinitions>
-        <TextBlock x:Name="timerText" Text="00:00:00" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-        <Button Content="RESTART" Background = "LightGreen" HorizontalAlignment="Center"   VerticalContentAlignment="Center"   FontSize="22" VerticalAlignment="Center" Click="BtnRestart_Click"/>
-        <TextBlock x:Name="scoreText" Text="00" FontSize="24"  HorizontalAlignment="Right" VerticalAlignment="Center"/>
+        <TextBlock x:Name="timerText" Text="00:00:00" Height="40" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="3,13,0,0"   FontFamily="Arial Black">
+            
+        </TextBlock>
+        <Button Content="Restart"  Height="40" HorizontalAlignment="Center"  VerticalContentAlignment="Center"  FontSize="24" Click="BtnRestart_Click" FontFamily="Arial Black" Background="LightGray" Foreground="Green"  BorderThickness="5" BorderBrush="Gray" Width="129">
+
+        </Button>
+        <TextBlock x:Name="scoreText" Text="00:00:00" Height="40" FontSize="24" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="3,13,0,0"  FontFamily="Arial Black">
+        </TextBlock>
+
     </Grid>
 </Window>

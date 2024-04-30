@@ -7,6 +7,8 @@ using System.Windows.Media.Imaging;
 using System.Timers;
 using System.Windows.Input;
 using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
+using System.Data.Common;
 
 namespace Wpf_Karelia
 {
@@ -18,7 +20,7 @@ namespace Wpf_Karelia
         int ratio = 16;
         int xSize, minesCount, unOpenedCellsCount;
         BitmapImage bitmapImageFlag, bitmapImageMine;
-        System.Timers.Timer timer;
+        Timer timer;
         DateTime startTime;
         bool isStarted;
         TextBlock winText;
@@ -57,16 +59,19 @@ namespace Wpf_Karelia
             DisableButtons(true);
         }
 
+
         private void WonTheGame()
         {
             timer.Stop();
             winText = new TextBlock();
-            winText.HorizontalAlignment = HorizontalAlignment.Center;
-            winText.VerticalAlignment = VerticalAlignment.Center;
-            winText.FontSize = 38;
+            winText.HorizontalAlignment = HorizontalAlignment.Stretch;
+            winText.VerticalAlignment = VerticalAlignment.Stretch;
+            winText.FontSize = gridMain.ActualHeight;
+          
             winText.Text = "Congrats";
-            winText.Background = Brushes.Wheat;
+            winText.Background = Brushes.AliceBlue;
             root.Children.Add(winText);
+          
             Grid.SetRow(winText, 1);
             DisableButtons(false);
             Methods.PlayWinChordProgression(new Random().Next(48, 60));
@@ -74,7 +79,7 @@ namespace Wpf_Karelia
 
 
         private void ShowScore()
-        { scoreText.Text = string.Format("COUNT {0}", minesCount); }
+        { scoreText.Text = string.Format("Count: {0}", minesCount); }
         private void TimerElapsed(object sender, ElapsedEventArgs e)
         {
             TimeSpan elapsedTime = e.SignalTime - startTime;
@@ -197,11 +202,9 @@ namespace Wpf_Karelia
             button.Background = Brushes.LightGray;
             button.HorizontalAlignment = HorizontalAlignment.Stretch;
             button.VerticalAlignment = VerticalAlignment.Stretch;
-
             button.Foreground = Brushes.Black;
             button.BorderBrush = Brushes.Gray;
             button.BorderThickness = new System.Windows.Thickness(0, 0, 5, 5);
-
             button.Click += Btn_Click;
             button.MouseRightButtonDown += Btn_RightClick;
             return button;
@@ -210,11 +213,38 @@ namespace Wpf_Karelia
         {
             if (cell != 0) btn.Content = cell;
             else btn.Content = "";
-            byte color = (byte)(255 / ((cell==0) ? 0.2 : cell*2));
             btn.Background = new SolidColorBrush(Color.FromArgb(50, 255, 255, 255));
-            btn.Foreground = new SolidColorBrush(Color.FromArgb(255, 20, color, 20));
-            btn.FontSize = 18;
-           // btn.FontStretch = FontStretches.ExtraExpanded;
+            switch (cell)
+            {
+                case 0:
+                    btn.Foreground = Brushes.Transparent;
+                    break;
+                case 1:
+                    btn.Foreground = Brushes.Green;
+                    break;
+                case 2:
+                    btn.Foreground = Brushes.Red;
+                    break;
+                case 3:
+                    btn.Foreground = Brushes.Blue;
+                    break;
+                case 4:
+                    btn.Foreground = Brushes.Yellow;
+                    break;
+                case 5:
+                    btn.Foreground = Brushes.Orange;
+                    break;
+                case 6:
+                    btn.Foreground = Brushes.Purple;
+                    break;
+                case 7:
+                    btn.Foreground = Brushes.Cyan;
+                    break;
+                case 8:
+                    btn.Foreground = Brushes.Magenta;
+                    break;
+            }
+            btn.FontSize = 0.65 * btn.ActualHeight;
             btn.FontWeight = FontWeights.Bold;
             btn.Click -= Btn_Click;
             btn.MouseRightButtonDown -= Btn_RightClick;
@@ -239,6 +269,18 @@ namespace Wpf_Karelia
             isStarted = true;
             DrawCheckCell(sender as Button);
         }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            int sideRatio = 100 * (int)this.ActualWidth / (int)this.ActualHeight;
+            if (sideRatio > 170 || sideRatio < 130 || ((int)this.ActualHeight / this.ySize < 55)) 
+            {
+                this.Height = e.PreviousSize.Height;
+                this.Width = e.PreviousSize.Width;
+                return;
+            }
+        }
+
         private void Btn_RightClick(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
@@ -274,6 +316,7 @@ namespace Wpf_Karelia
             if (isStarted)  return;
             ySize -= e.Delta / 120;
             ySize = (ySize < 4) ? 4 : ySize;
+            ySize = (ySize > 15) ? 15 : ySize;
             Methods.PlayGlissandoPentatonic(ySize * 7, (e.Delta > 0 ? 1 : -1 ) * 20, 50);
             gridMain.Children.Clear();
             StartTheGame();
