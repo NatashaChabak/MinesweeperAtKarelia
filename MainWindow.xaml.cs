@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
 using System.Data.Common;
+// using static System.Net.Mime.MediaTypeNames;
 
 namespace Wpf_Karelia
 {
@@ -81,7 +82,7 @@ namespace Wpf_Karelia
             TimeSpan elapsedTime = e.SignalTime - startTime;
             Dispatcher.Invoke(() =>
             {
-                timerText.Text = elapsedTime.ToString(@"hh\:mm\:ss");
+                timerText.Text = elapsedTime.ToString(@"mm\:ss");
             });
         }
 
@@ -173,9 +174,8 @@ namespace Wpf_Karelia
 
         private void SetImageProperties(Image image, double ActualHeight, double ActualWidth)
         {
-           // image.Height = 0.8 * ActualHeight;
-           // image.Width = 0.8 * ActualWidth;
-            //image.Stretch = Stretch.Fill;
+           image.Height = 0.8 * ActualHeight;
+           image.Width = 0.8 * ActualWidth;
            image.HorizontalAlignment = HorizontalAlignment.Stretch;
            image.VerticalAlignment = VerticalAlignment.Stretch;
         }
@@ -210,8 +210,23 @@ namespace Wpf_Karelia
             button.BorderThickness = new System.Windows.Thickness(0, 0, 5, 5);
             button.Click += Btn_Click;
             button.MouseRightButtonDown += Btn_RightClick;
+            button.SizeChanged += Button_SizeChanged;
             return button;
         }
+
+        private void Button_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            Button btn = sender as Button;
+            btn.FontSize = 0.65 * btn.ActualHeight;
+            if (btn.Content != null && btn.Content.GetType() == typeof(Image))
+            {
+                Image image = btn.Content as Image;
+                image.Height = 0.8 * btn.ActualHeight;
+                image.Width = 0.8 * btn.ActualWidth;
+               //btn.Content = image;
+            }
+        }
+
         private void AddContentToButton(Button btn, int cell)
         {
             if (cell != 0) btn.Content = cell;
@@ -248,6 +263,7 @@ namespace Wpf_Karelia
                     break;
             }
             btn.FontSize = 0.65 * btn.ActualHeight;
+            btn.FontStretch = System.Windows.FontStretches.UltraExpanded;
             btn.FontWeight = FontWeights.Bold;
             btn.Click -= Btn_Click;
             btn.MouseRightButtonDown -= Btn_RightClick;
