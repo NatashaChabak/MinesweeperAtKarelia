@@ -175,6 +175,15 @@ namespace Wpf_Karelia
             }
         }
 
+        private void SetImageProperties(Image image, Button btn)
+        {
+            image.Height = 0.8 * btn.ActualHeight;
+            image.Width = 0.8 * btn.ActualWidth;
+            image.Stretch = Stretch.UniformToFill;
+            image.HorizontalAlignment = HorizontalAlignment.Stretch;
+            image.VerticalAlignment = VerticalAlignment.Stretch;
+        }
+
         private void DrawMine(Button btn)
         {
             int row = (int)btn.GetValue(Grid.RowProperty);
@@ -184,9 +193,7 @@ namespace Wpf_Karelia
             {
                 Image mineImage = new Image();
                 mineImage.Source = bitmapImageMine;
-                mineImage.Height = 0.8 * btn.ActualHeight;
-                mineImage.Width = 0.8 * btn.ActualWidth;
-                mineImage.Stretch = Stretch.UniformToFill;
+                SetImageProperties(mineImage, btn);
                 btn.Content = mineImage;
                 byte minebyte = ((byte)((30 + (row + column) / 2)));
                 Methods.PlayNote(minebyte, 20);
@@ -273,12 +280,18 @@ namespace Wpf_Karelia
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             int sideRatio = 100 * (int)this.ActualWidth / (int)this.ActualHeight;
-            if (sideRatio > 170 || sideRatio < 130 || ((int)this.ActualHeight / this.ySize < 55)) 
+            if (!CheckSize((int)this.ActualHeight, (int)this.ActualWidth) && CheckSize((int)e.PreviousSize.Height, (int)e.PreviousSize.Width))
             {
                 this.Height = e.PreviousSize.Height;
                 this.Width = e.PreviousSize.Width;
-                return;
             }
+        }
+
+        private Boolean CheckSize(int Height, int Width)
+        {
+            int sideRatio = 100 * Width / Height;
+            if (sideRatio > 170 || sideRatio < 130 || (Height / this.ySize < 55)) { return false; }
+            return true;
         }
 
         private void Btn_RightClick(object sender, RoutedEventArgs e)
@@ -289,7 +302,7 @@ namespace Wpf_Karelia
                 if (minesCount == 0 ) { return; } 
                 Image flagImage = new Image();
                 flagImage.Source = bitmapImageFlag;
-                flagImage.HorizontalAlignment = HorizontalAlignment.Stretch;
+                SetImageProperties(flagImage, btn);
                 btn.Content = flagImage;
                 btn.Click -= Btn_Click;
                 Methods.PlayNote((byte)(72 - minesCount));
