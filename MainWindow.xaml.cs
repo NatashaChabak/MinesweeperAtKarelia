@@ -6,11 +6,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Timers;
 using System.Windows.Input;
-using System.Collections.Generic;
-using System.ComponentModel.Design.Serialization;
-using System.Data.Common;
-// using static System.Net.Mime.MediaTypeNames;
-
 namespace Wpf_Karelia
 {
     public partial class MainWindow : Window
@@ -31,16 +26,13 @@ namespace Wpf_Karelia
             bitmapImageFlag = new BitmapImage(new Uri("FlagFin.png", UriKind.Relative));
             bitmapImageMine = new BitmapImage(new Uri("Mine.jpg", UriKind.Relative));
             bitmapImageWin = new BitmapImage(new Uri("Winners.jpeg", UriKind.Relative));
-
-            timer = new System.Timers.Timer();
+            timer = new Timer();
             timer.Interval = 1000;
             timer.Elapsed += TimerElapsed;
             Methods.PlayNote(0); 
-
             InitializeComponent();
             StartTheGame();
          }
-
         private void StartTheGame()
         {
             xSize = ySize * ratio / 10;
@@ -60,8 +52,6 @@ namespace Wpf_Karelia
             timer.Stop();
             DisableButtons(true);
         }
-
-
         private void WonTheGame()
         {
             timer.Stop();
@@ -74,7 +64,6 @@ namespace Wpf_Karelia
             Methods.PlayWinChordProgression(new Random().Next(48, 60));
         }
 
-
         private void ShowScore()
         { scoreText.Text = string.Format("Mines: {0}", minesCount); }
         private void TimerElapsed(object sender, ElapsedEventArgs e)
@@ -86,7 +75,6 @@ namespace Wpf_Karelia
             });
         }
 
-        //======================================================Drawing=================================================
         private Grid DrawGrid()
         {
             var grid = new Grid();
@@ -176,8 +164,8 @@ namespace Wpf_Karelia
         {
            image.Height = 0.8 * ActualHeight;
            image.Width = 0.8 * ActualWidth;
-           image.HorizontalAlignment = HorizontalAlignment.Stretch;
-           image.VerticalAlignment = VerticalAlignment.Stretch;
+           //image.HorizontalAlignment = HorizontalAlignment.Stretch;
+           //image.VerticalAlignment = VerticalAlignment.Stretch;
         }
 
         private void DrawMine(Button btn)
@@ -202,7 +190,7 @@ namespace Wpf_Karelia
             Button button = new Button();
             button.MinHeight = 50;
             button.MinWidth = 50;
-            button.Background = Brushes.LightGray;
+            button.Background = Brushes.DarkGray;
             button.HorizontalAlignment = HorizontalAlignment.Stretch;
             button.VerticalAlignment = VerticalAlignment.Stretch;
             button.Foreground = Brushes.Black;
@@ -217,13 +205,12 @@ namespace Wpf_Karelia
         private void Button_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             Button btn = sender as Button;
-            btn.FontSize = 0.65 * btn.ActualHeight;
+            btn.FontSize = 0.6 * btn.ActualHeight;
             if (btn.Content != null && btn.Content.GetType() == typeof(Image))
             {
                 Image image = btn.Content as Image;
                 image.Height = 0.8 * btn.ActualHeight;
                 image.Width = 0.8 * btn.ActualWidth;
-               //btn.Content = image;
             }
         }
 
@@ -262,8 +249,7 @@ namespace Wpf_Karelia
                     btn.Foreground = Brushes.Magenta;
                     break;
             }
-            btn.FontSize = 0.65 * btn.ActualHeight;
-            btn.FontStretch = System.Windows.FontStretches.UltraExpanded;
+            btn.FontSize = 0.6 * btn.ActualHeight;
             btn.FontWeight = FontWeights.Bold;
             btn.Click -= Btn_Click;
             btn.MouseRightButtonDown -= Btn_RightClick;
@@ -316,6 +302,7 @@ namespace Wpf_Karelia
                 flagImage.Source = bitmapImageFlag;
                 SetImageProperties(flagImage, btn.ActualHeight, btn.ActualWidth);
                 btn.Content = flagImage;
+                //btn.Background = Brushes.DarkGray;
                 btn.Click -= Btn_Click;
                 Methods.PlayNote((byte)(72 - minesCount));
                 minesCount -= 1;
@@ -323,6 +310,7 @@ namespace Wpf_Karelia
             else 
             {
                 btn.Content = null;
+               //btn.Background = Brushes.LightGray;
                 btn.Click += Btn_Click;
                 minesCount += 1;
             }
