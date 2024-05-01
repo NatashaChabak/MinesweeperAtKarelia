@@ -1,6 +1,4 @@
-﻿using Melanchall.DryWetMidi.Multimedia;
-using System;
-using System.Data.Common;
+﻿using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -8,10 +6,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Timers;
 using System.Windows.Input;
-using System.Collections.Generic;
-
-
-
 namespace Wpf_Karelia
 {
     public partial class MainWindow : Window
@@ -21,26 +15,24 @@ namespace Wpf_Karelia
         int ySize = 10;
         int ratio = 16;
         int xSize, minesCount, unOpenedCellsCount;
-        BitmapImage bitmapImageFlag, bitmapImageMine;
+        BitmapImage bitmapImageFlag, bitmapImageMine, bitmapImageWin;
         Timer timer;
         DateTime startTime;
         bool isStarted;
-        TextBlock winText;
+        Image winImage;
 
         public MainWindow()
         {
-            bitmapImageFlag = new BitmapImage(new Uri("Flag.jpg", UriKind.Relative));
+            bitmapImageFlag = new BitmapImage(new Uri("FlagFin.png", UriKind.Relative));
             bitmapImageMine = new BitmapImage(new Uri("Mine.jpg", UriKind.Relative));
-
+            bitmapImageWin = new BitmapImage(new Uri("Winners.jpeg", UriKind.Relative));
             timer = new Timer();
             timer.Interval = 1000;
             timer.Elapsed += TimerElapsed;
             Methods.PlayNote(0); 
-
             InitializeComponent();
             StartTheGame();
          }
-
         private void StartTheGame()
         {
             xSize = ySize * ratio / 10;
@@ -60,35 +52,29 @@ namespace Wpf_Karelia
             timer.Stop();
             DisableButtons(true);
         }
-
         private void WonTheGame()
         {
             timer.Stop();
-            winText = new TextBlock();
-            winText.HorizontalAlignment = HorizontalAlignment.Center;
-            winText.VerticalAlignment = VerticalAlignment.Center;
-            winText.FontSize = 38;
-            winText.Text = "Congrats";
-            winText.Background = Brushes.Wheat;
-            root.Children.Add(winText);
-            Grid.SetRow(winText, 1);
+            winImage = new Image();
+            winImage.Source = bitmapImageWin;
+            SetImageProperties(winImage, this.ActualHeight, this.ActualWidth);     
+            root.Children.Add(winImage);        
+            Grid.SetRow(winImage, 1);
             DisableButtons(false);
             Methods.PlayWinChordProgression(new Random().Next(48, 60));
         }
 
-
         private void ShowScore()
-        { scoreText.Text = string.Format("COUNT {0}", minesCount); }
+        { scoreText.Text = string.Format("Mines: {0}", minesCount); }
         private void TimerElapsed(object sender, ElapsedEventArgs e)
         {
             TimeSpan elapsedTime = e.SignalTime - startTime;
             Dispatcher.Invoke(() =>
             {
-                timerText.Text = elapsedTime.ToString(@"hh\:mm\:ss");
+                timerText.Text = elapsedTime.ToString(@"mm\:ss");
             });
         }
 
-        //======================================================Drawing=================================================
         private Grid DrawGrid()
         {
             var grid = new Grid();
@@ -145,8 +131,8 @@ namespace Wpf_Karelia
                 AddContentToButton(btn, cell);
                 if (cell != 0)
                 {
-                    byte cellbyte = (byte)((48 + row + column));
-                    Methods.PlayNote(cellbyte, 10);
+                    byte cellByte = (byte)((48 + row + column));
+                    Methods.PlayNote(cellByte, 10);
                 }
                 else
                 {
@@ -174,6 +160,14 @@ namespace Wpf_Karelia
             }
         }
 
+        private void SetImageProperties(Image image, double ActualHeight, double ActualWidth)
+        {
+           image.Height = 0.8 * ActualHeight;
+           image.Width = 0.8 * ActualWidth;
+           //image.HorizontalAlignment = HorizontalAlignment.Stretch;
+           //image.VerticalAlignment = VerticalAlignment.Stretch;
+        }
+
         private void DrawMine(Button btn)
         {
             int row = (int)btn.GetValue(Grid.RowProperty);
@@ -183,7 +177,7 @@ namespace Wpf_Karelia
             {
                 Image mineImage = new Image();
                 mineImage.Source = bitmapImageMine;
-                mineImage.Stretch = Stretch.UniformToFill;
+                SetImageProperties(mineImage, btn.ActualHeight, btn.ActualWidth);
                 btn.Content = mineImage;
                 byte minebyte = ((byte)((30 + (row + column) / 2)));
                 Methods.PlayNote(minebyte, 20);
@@ -194,32 +188,72 @@ namespace Wpf_Karelia
         private Button AddButton()
         {
             Button button = new Button();
-            button.Height = 50;
-            button.Width = 50;
-            button.Background = Brushes.LightGray;
-
+            button.MinHeight = 50;
+            button.MinWidth = 50;
+            button.Background = Brushes.DarkGray;
+            button.HorizontalAlignment = HorizontalAlignment.Stretch;
+            button.VerticalAlignment = VerticalAlignment.Stretch;
             button.Foreground = Brushes.Black;
             button.BorderBrush = Brushes.Gray;
-
             button.BorderThickness = new System.Windows.Thickness(0, 0, 5, 5);
-
             button.Click += Btn_Click;
             button.MouseRightButtonDown += Btn_RightClick;
+            button.SizeChanged += Button_SizeChanged;
             return button;
         }
+
+        private void Button_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            Button btn = sender as Button;
+            btn.FontSize = 0.6 * btn.ActualHeight;
+            if (btn.Content != null && btn.Content.GetType() == typeof(Image))
+            {
+                Image image = btn.Content as Image;
+                image.Height = 0.8 * btn.ActualHeight;
+                image.Width = 0.8 * btn.ActualWidth;
+            }
+        }
+
         private void AddContentToButton(Button btn, int cell)
         {
             if (cell != 0) btn.Content = cell;
             else btn.Content = "";
-            byte color = (byte)(255 / ((cell==0) ? 0.2 : cell*2));
             btn.Background = new SolidColorBrush(Color.FromArgb(50, 255, 255, 255));
-            btn.Foreground = new SolidColorBrush(Color.FromArgb(255, 20, color, 20));
-            btn.FontSize = 18;
+            switch (cell)
+            {
+                case 0:
+                    btn.Foreground = Brushes.Transparent;
+                    break;
+                case 1:
+                    btn.Foreground = Brushes.Green;
+                    break;
+                case 2:
+                    btn.Foreground = Brushes.Red;
+                    break;
+                case 3:
+                    btn.Foreground = Brushes.Blue;
+                    break;
+                case 4:
+                    btn.Foreground = Brushes.Yellow;
+                    break;
+                case 5:
+                    btn.Foreground = Brushes.Orange;
+                    break;
+                case 6:
+                    btn.Foreground = Brushes.Purple;
+                    break;
+                case 7:
+                    btn.Foreground = Brushes.Cyan;
+                    break;
+                case 8:
+                    btn.Foreground = Brushes.Magenta;
+                    break;
+            }
+            btn.FontSize = 0.6 * btn.ActualHeight;
             btn.FontWeight = FontWeights.Bold;
             btn.Click -= Btn_Click;
             btn.MouseRightButtonDown -= Btn_RightClick;
             if (--unOpenedCellsCount == 0) { WonTheGame(); }
-
         }
 
         private Button GetButtonFromGrid(Grid grid, int row, int column)
@@ -240,15 +274,35 @@ namespace Wpf_Karelia
             isStarted = true;
             DrawCheckCell(sender as Button);
         }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            int sideRatio = 100 * (int)this.ActualWidth / (int)this.ActualHeight;
+            if (!CheckSize((int)this.ActualHeight, (int)this.ActualWidth) && CheckSize((int)e.PreviousSize.Height, (int)e.PreviousSize.Width))
+            {
+                this.Height = e.PreviousSize.Height;
+                this.Width = e.PreviousSize.Width;
+            }
+        }
+
+        private Boolean CheckSize(int Height, int Width)
+        {
+            int sideRatio = 100 * Width / Height;
+            if (sideRatio > 170 || sideRatio < 130 || (Height / this.ySize < 55)) { return false; }
+            return true;
+        }
+
         private void Btn_RightClick(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
             if (btn.Content == null)
-             {
+            {
                 if (minesCount == 0 ) { return; } 
                 Image flagImage = new Image();
                 flagImage.Source = bitmapImageFlag;
+                SetImageProperties(flagImage, btn.ActualHeight, btn.ActualWidth);
                 btn.Content = flagImage;
+                //btn.Background = Brushes.DarkGray;
                 btn.Click -= Btn_Click;
                 Methods.PlayNote((byte)(72 - minesCount));
                 minesCount -= 1;
@@ -256,6 +310,7 @@ namespace Wpf_Karelia
             else 
             {
                 btn.Content = null;
+               //btn.Background = Brushes.LightGray;
                 btn.Click += Btn_Click;
                 minesCount += 1;
             }
@@ -263,16 +318,18 @@ namespace Wpf_Karelia
         }
         private void BtnRestart_Click(object sender, RoutedEventArgs e)
         {
+            Methods.PlayGlissando(new Random().Next(60, 72), 24);
             gridMain.Children.Clear();
             isStarted = false;
-            root.Children.Remove(winText);
+            root.Children.Remove(winImage);
             StartTheGame();
         }
         private void GridMain_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (isStarted)  return;
             ySize -= e.Delta / 120;
-            ySize = (ySize < 4) ? 4 : ySize;
+            ySize = (ySize < 5) ? 5 : ySize;
+            ySize = (ySize > 15) ? 15 : ySize;
             Methods.PlayGlissandoPentatonic(ySize * 7, (e.Delta > 0 ? 1 : -1 ) * 20, 50);
             gridMain.Children.Clear();
             StartTheGame();
