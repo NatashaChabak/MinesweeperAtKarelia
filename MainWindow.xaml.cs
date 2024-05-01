@@ -63,7 +63,6 @@ namespace Wpf_Karelia
             DisableButtons(false);
             Methods.PlayWinChordProgression(new Random().Next(48, 60));
         }
-
         private void ShowScore()
         { scoreText.Text = string.Format("Mines: {0}", minesCount); }
         private void TimerElapsed(object sender, ElapsedEventArgs e)
@@ -98,7 +97,6 @@ namespace Wpf_Karelia
                 }
             }
             return grid;
-
         }
         private void DrawCheckCell(Button btn)
         {
@@ -159,13 +157,10 @@ namespace Wpf_Karelia
                 if (isLost) DrawMine(btn);
             }
         }
-
         private void SetImageProperties(Image image, double ActualHeight, double ActualWidth)
         {
            image.Height = 0.8 * ActualHeight;
            image.Width = 0.8 * ActualWidth;
-           //image.HorizontalAlignment = HorizontalAlignment.Stretch;
-           //image.VerticalAlignment = VerticalAlignment.Stretch;
         }
 
         private void DrawMine(Button btn)
@@ -183,8 +178,6 @@ namespace Wpf_Karelia
                 Methods.PlayNote(minebyte, 20);
             }
         }
-
-        //======================================================Buttons=================================================
         private Button AddButton()
         {
             Button button = new Button();
@@ -267,8 +260,6 @@ namespace Wpf_Karelia
             }
             return null;
         }
-
-        //======================================================Actions=================================================
         private void Btn_Click(object sender, RoutedEventArgs e)
         {
             isStarted = true;
@@ -284,7 +275,6 @@ namespace Wpf_Karelia
                 this.Width = e.PreviousSize.Width;
             }
         }
-
         private Boolean CheckSize(int Height, int Width)
         {
             int sideRatio = 100 * Width / Height;
@@ -302,7 +292,6 @@ namespace Wpf_Karelia
                 flagImage.Source = bitmapImageFlag;
                 SetImageProperties(flagImage, btn.ActualHeight, btn.ActualWidth);
                 btn.Content = flagImage;
-                //btn.Background = Brushes.DarkGray;
                 btn.Click -= Btn_Click;
                 Methods.PlayNote((byte)(72 - minesCount));
                 minesCount -= 1;
@@ -310,7 +299,6 @@ namespace Wpf_Karelia
             else 
             {
                 btn.Content = null;
-               //btn.Background = Brushes.LightGray;
                 btn.Click += Btn_Click;
                 minesCount += 1;
             }
