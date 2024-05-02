@@ -24,7 +24,7 @@ namespace Wpf_Karelia
         public MainWindow()
         {
             bitmapImageFlag = new BitmapImage(new Uri("FlagFin.png", UriKind.Relative));
-            bitmapImageMine = new BitmapImage(new Uri("Mine.jpg", UriKind.Relative));
+            bitmapImageMine = new BitmapImage(new Uri("Mine.png", UriKind.Relative));
             bitmapImageWin = new BitmapImage(new Uri("Winners.jpeg", UriKind.Relative));
             timer = new Timer();
             timer.Interval = 1000;

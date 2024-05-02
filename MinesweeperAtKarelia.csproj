@@ -9,8 +9,8 @@
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <ItemGroup>
-    <Resource Include="Mine.jpg" />
     <Resource Include="FlagFin.png" />
+    <Resource Include="Mine.png" />
     <Resource Include="Winners.jpeg" />
   </ItemGroup>
   <ItemGroup>
