@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wpf_Karelia"
         mc:Ignorable="d"
-        Title="Minesweeper"  SizeChanged="Window_SizeChanged" SizeToContent="WidthAndHeight">
+        Title="Minesweeper"  SizeChanged="Window_SizeChanged" SizeToContent="WidthAndHeight" Icon="Mine.png">
     <Grid Name="root" ShowGridLines="True">
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
