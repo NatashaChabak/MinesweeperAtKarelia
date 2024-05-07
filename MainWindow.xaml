@@ -11,11 +11,11 @@
             <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock x:Name="timerText" Text="00:00" Height="40" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="3,13,0,0"   FontFamily="Arial Black">
+        <TextBlock x:Name="timerText" Text="00:00" Height="40" FontSize="24" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="23,13,0,0"   FontFamily="Arial Black">
         </TextBlock>
         <Button Content="Restart"  Height="40" HorizontalAlignment="Center"  VerticalContentAlignment="Center"  FontSize="24" Click="BtnRestart_Click" FontFamily="Arial Black" Background="LightGray" Foreground="Green"  BorderThickness="5" BorderBrush="Gray" Width="129">
         </Button>
-        <TextBlock x:Name="scoreText" Text="00" Height="40" FontSize="24" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="3,13,0,0"  FontFamily="Arial Black">
+        <TextBlock x:Name="scoreText" Text="00" Height="40" FontSize="24" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="3,13,23,0"  FontFamily="Arial Black">
         </TextBlock>
     </Grid>
 </Window>
