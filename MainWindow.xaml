@@ -15,7 +15,9 @@
         </TextBlock>
         <Button Content="Restart"  Height="40" HorizontalAlignment="Center"  VerticalContentAlignment="Center"  FontSize="24" Click="BtnRestart_Click" FontFamily="Arial Black" Background="LightGray" Foreground="Green"  BorderThickness="5" BorderBrush="Gray" Width="129" Focusable="False">
         </Button>
-        <TextBlock x:Name="scoreText" Text="00" Height="40" FontSize="24" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="3,13,23,0"  FontFamily="Arial Black">
-        </TextBlock>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="3,13,23,0">
+            <TextBlock x:Name="scoreText" Text="00" Height="40" FontSize="24"  FontFamily="Arial Black"></TextBlock>
+            <Button x:Name="helpButton" Height="20" Content="?" VerticalAlignment="Center" Width="20" Margin="13,3,3,13" Click="helpButton_Click" ></Button>
+        </StackPanel>
     </Grid>
 </Window>
