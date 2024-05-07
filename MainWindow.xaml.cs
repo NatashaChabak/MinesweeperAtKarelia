@@ -192,6 +192,7 @@ namespace Wpf_Karelia
             button.Click += Btn_Click;
             button.MouseRightButtonDown += Btn_RightClick;
             button.SizeChanged += Button_SizeChanged;
+            button.Focusable = false;
             return button;
         }
 
