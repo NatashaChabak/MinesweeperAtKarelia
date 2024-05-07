@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Timers;
 using System.Windows.Input;
+
 namespace Wpf_Karelia
 {
     public partial class MainWindow : Window
@@ -276,6 +277,47 @@ namespace Wpf_Karelia
                 this.Width = e.PreviousSize.Width;
             }
         }
+
+        private void helpButton_Click(object sender, RoutedEventArgs e)
+        {
+            Window popupWindow = new Window
+            {
+                Title = "Help",
+                Width = 500,
+                SizeToContent = SizeToContent.Height,
+            };
+
+            var helpText = new Label
+            {
+                AllowDrop = false,
+                Content = new TextBlock
+                {
+                    Text = "Minesweeper Game\n\n" +
+                    "Controls:\n" +
+                    "Left Click: Open the cell\n" +
+                    "Right Click: Mark the cell with a flag\n" +
+                    "Mouse Wheel: Change the size of the game board\n" +
+                    "Restart Button: Restart the game\n\n" +
+                    "The game is a simple minesweeper game. " +
+                    "The goal is to open all the cells that do not contain mines. " +
+                    "If you open a cell with a mine, you lose. If you open all the cells without mines, you win. " +
+                    "You can mark the cells you think contain mines with a flag. " +
+                    "You can change the size of the game board with the mouse wheel. " +
+                    "You can restart the game by clicking the restart button. Have fun!",
+                    FontSize = 20,
+                    Foreground = Brushes.Black,
+                    TextWrapping = TextWrapping.Wrap
+                },
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                FontSize = 20,
+                Foreground = Brushes.Black,
+            };
+            popupWindow.Content = helpText;
+            popupWindow.ShowDialog();
+
+        }
+
         private Boolean CheckSize(int Height, int Width)
         {
             int sideRatio = 100 * Width / Height;
