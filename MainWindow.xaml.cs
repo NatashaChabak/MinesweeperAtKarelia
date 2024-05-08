@@ -14,7 +14,8 @@ namespace Wpf_Karelia
         Grid gridMain;
         int[,] minesArray;
         int ySize = 10;
-        double ratio = 1.6;
+        int gridRatio = 16;
+        double windowRatio = 1.3853989813242784;
         int xSize, minesCount, unOpenedCellsCount;
         BitmapImage bitmapImageFlag, bitmapImageMine, bitmapImageWin;
         Timer timer;
@@ -33,10 +34,10 @@ namespace Wpf_Karelia
             Methods.PlayNote(0); 
             InitializeComponent();
             StartTheGame();
-         }
+        }
         private void StartTheGame()
         {
-            xSize = (int)(ySize * ratio);
+            xSize = ySize * gridRatio / 10;
             minesCount = ySize * xSize / 8;
             minesArray = Methods.CreateMinesArray(minesCount, ySize, xSize);
             unOpenedCellsCount = ySize * xSize - minesCount;
@@ -272,15 +273,15 @@ namespace Wpf_Karelia
         {
             double newRatio = this.Width / this.Height;
 
-            if (Math.Abs(newRatio - ratio) > 0.01) // Allow a small deviation to prevent flickering
+            if (Math.Abs(newRatio - windowRatio) > 0.01) // Allow a small deviation to prevent flickering
             {
                 if (e.WidthChanged)
                 {
-                    this.Height = this.Width / ratio;
+                    this.Height = this.Width / windowRatio;
                 }
                 else if (e.HeightChanged)
                 {
-                    this.Width = this.Height * ratio;
+                    this.Width = this.Height * windowRatio;
                 }
             }
         }
@@ -323,13 +324,6 @@ namespace Wpf_Karelia
             popupWindow.Content = helpText;
             popupWindow.ShowDialog();
 
-        }
-
-        private Boolean CheckSize(int Height, int Width)
-        {
-            int sideRatio = 100 * Width / Height;
-            if (sideRatio > 170 || sideRatio < 130 || (Height / this.ySize < 55)) { return false; }
-            return true;
         }
 
         private void Btn_RightClick(object sender, RoutedEventArgs e)
