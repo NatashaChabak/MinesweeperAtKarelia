@@ -14,7 +14,7 @@ namespace Wpf_Karelia
         Grid gridMain;
         int[,] minesArray;
         int ySize = 10;
-        int ratio = 16;
+        double ratio = 1.6;
         int xSize, minesCount, unOpenedCellsCount;
         BitmapImage bitmapImageFlag, bitmapImageMine, bitmapImageWin;
         Timer timer;
@@ -36,7 +36,7 @@ namespace Wpf_Karelia
          }
         private void StartTheGame()
         {
-            xSize = ySize * ratio / 10;
+            xSize = (int)(ySize * ratio);
             minesCount = ySize * xSize / 8;
             minesArray = Methods.CreateMinesArray(minesCount, ySize, xSize);
             unOpenedCellsCount = ySize * xSize - minesCount;
@@ -270,11 +270,18 @@ namespace Wpf_Karelia
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            int sideRatio = 100 * (int)this.ActualWidth / (int)this.ActualHeight;
-            if (!CheckSize((int)this.ActualHeight, (int)this.ActualWidth) && CheckSize((int)e.PreviousSize.Height, (int)e.PreviousSize.Width))
+            double newRatio = this.Width / this.Height;
+
+            if (Math.Abs(newRatio - ratio) > 0.01) // Allow a small deviation to prevent flickering
             {
-                this.Height = e.PreviousSize.Height;
-                this.Width = e.PreviousSize.Width;
+                if (e.WidthChanged)
+                {
+                    this.Height = this.Width / ratio;
+                }
+                else if (e.HeightChanged)
+                {
+                    this.Width = this.Height * ratio;
+                }
             }
         }
 
