@@ -15,6 +15,7 @@ namespace Wpf_Karelia
         int[,] minesArray;
         int ySize = 10;
         int ratio = 16;
+        double windowRatio = 1.3853989813242784;
         int xSize, minesCount, unOpenedCellsCount;
         BitmapImage bitmapImageFlag, bitmapImageMine, bitmapImageWin;
         Timer timer;
@@ -270,12 +271,8 @@ namespace Wpf_Karelia
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            int sideRatio = 100 * (int)this.ActualWidth / (int)this.ActualHeight;
-            if (!CheckSize((int)this.ActualHeight, (int)this.ActualWidth) && CheckSize((int)e.PreviousSize.Height, (int)e.PreviousSize.Width))
-            {
-                this.Height = e.PreviousSize.Height;
-                this.Width = e.PreviousSize.Width;
-            }
+                this.Height = this.Width / windowRatio;
+                this.Width = this.Height * windowRatio;
         }
 
         private void helpButton_Click(object sender, RoutedEventArgs e)
