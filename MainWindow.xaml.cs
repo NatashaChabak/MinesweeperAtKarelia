@@ -21,6 +21,8 @@ namespace Wpf_Karelia
         DateTime startTime;
         bool isStarted;
         Image winImage;
+        TextBlock textBlock;
+        Border border;
 
         public MainWindow()
         {
@@ -42,7 +44,7 @@ namespace Wpf_Karelia
             unOpenedCellsCount = ySize * xSize - minesCount;
             gridMain = DrawGrid();
             root.Children.Add(gridMain);
-            Grid.SetRow(gridMain, 1);
+            Grid.SetRow(gridMain, ySize/2);
             startTime = DateTime.Now;
             timer.Start();
             ShowScore();
@@ -51,6 +53,22 @@ namespace Wpf_Karelia
         private void GameOver()
         {
             timer.Stop();
+            textBlock = new TextBlock();
+            textBlock.Text = "GAME OVER";
+            textBlock.HorizontalAlignment = HorizontalAlignment.Center;
+            textBlock.VerticalAlignment = VerticalAlignment.Center;
+            textBlock.FontSize = 87;
+            textBlock.Foreground = Brushes.Black;
+            textBlock.Opacity = 0.6;
+            textBlock.FontWeight = FontWeights.Bold;
+            root.Children.Add(textBlock);
+            Grid.SetRow(textBlock, ySize/2);
+
+            border = new Border();
+            border.Background = new SolidColorBrush(Colors.Red); 
+            border.Opacity = 0.3; 
+            root.Children.Add(border);
+            Grid.SetRow(border, 1);
             DisableButtons(true);
         }
         private void WonTheGame()
@@ -280,7 +298,7 @@ namespace Wpf_Karelia
 
         private void helpButton_Click(object sender, RoutedEventArgs e)
         {
-            Window popupWindow = new Window
+               Window popupWindow = new Window
             {
                 Title = "Help",
                 Width = 500,
@@ -353,6 +371,8 @@ namespace Wpf_Karelia
             gridMain.Children.Clear();
             isStarted = false;
             root.Children.Remove(winImage);
+            root.Children.Remove(textBlock);
+            root.Children.Remove(border);
             StartTheGame();
         }
         private void GridMain_MouseWheel(object sender, MouseWheelEventArgs e)
