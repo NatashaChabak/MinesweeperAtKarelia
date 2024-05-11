@@ -60,14 +60,15 @@ namespace Wpf_Karelia
             textBlock.VerticalAlignment = VerticalAlignment.Center;
             textBlock.FontSize = 87;
             textBlock.Foreground = Brushes.Black;
+            textBlock.Background = Brushes.White;
             textBlock.Opacity = 0.6;
             textBlock.FontWeight = FontWeights.Bold;
             root.Children.Add(textBlock);
             Grid.SetRow(textBlock, ySize / 2);
 
             border = new Border();
-            border.Background = new SolidColorBrush(Colors.Red);
-            border.Opacity = 0.3;
+            border.Background = new SolidColorBrush(Colors.Green);
+            border.Opacity = 0.1;
             root.Children.Add(border);
             Grid.SetRow(border, 1);
             DisableButtons(true);
