@@ -45,7 +45,7 @@ namespace Wpf_Karelia
             unOpenedCellsCount = ySize * xSize - minesCount;
             gridMain = DrawGrid();
             root.Children.Add(gridMain);
-            Grid.SetRow(gridMain, ySize / 2);
+            Grid.SetRow(gridMain, 1);
             startTime = DateTime.Now;
             timer.Start();
             ShowScore();
@@ -64,7 +64,7 @@ namespace Wpf_Karelia
             textBlock.Opacity = 0.6;
             textBlock.FontWeight = FontWeights.Bold;
             root.Children.Add(textBlock);
-            Grid.SetRow(textBlock, ySize / 2);
+            Grid.SetRow(textBlock, 1);
 
             border = new Border();
             border.Background = new SolidColorBrush(Colors.Green);
