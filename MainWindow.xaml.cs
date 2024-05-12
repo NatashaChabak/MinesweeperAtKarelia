@@ -6,6 +6,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Timers;
 using System.Windows.Input;
+using System.Windows.Controls.Primitives;
 
 namespace Wpf_Karelia
 {
@@ -21,6 +22,8 @@ namespace Wpf_Karelia
         DateTime startTime;
         bool isStarted;
         Image winImage;
+        TextBlock textBlock;
+        Border border;
 
         public MainWindow()
         {
@@ -30,10 +33,10 @@ namespace Wpf_Karelia
             timer = new Timer();
             timer.Interval = 1000;
             timer.Elapsed += TimerElapsed;
-            Methods.PlayNote(0); 
+            Methods.PlayNote(0);
             InitializeComponent();
             StartTheGame();
-         }
+        }
         private void StartTheGame()
         {
             xSize = ySize * ratio / 10;
@@ -51,6 +54,23 @@ namespace Wpf_Karelia
         private void GameOver()
         {
             timer.Stop();
+            textBlock = new TextBlock();
+            textBlock.Text = "GAME OVER";
+            textBlock.HorizontalAlignment = HorizontalAlignment.Center;
+            textBlock.VerticalAlignment = VerticalAlignment.Center;
+            textBlock.FontSize = 87;
+            textBlock.Foreground = Brushes.Black;
+            textBlock.Background = Brushes.White;
+            textBlock.Opacity = 0.6;
+            textBlock.FontWeight = FontWeights.Bold;
+            root.Children.Add(textBlock);
+            Grid.SetRow(textBlock, 1);
+
+            border = new Border();
+            border.Background = new SolidColorBrush(Colors.Green);
+            border.Opacity = 0.1;
+            root.Children.Add(border);
+            Grid.SetRow(border, 1);
             DisableButtons(true);
         }
         private void WonTheGame()
@@ -58,8 +78,8 @@ namespace Wpf_Karelia
             timer.Stop();
             winImage = new Image();
             winImage.Source = bitmapImageWin;
-            SetImageProperties(winImage, this.ActualHeight, this.ActualWidth);     
-            root.Children.Add(winImage);        
+            SetImageProperties(winImage, this.ActualHeight, this.ActualWidth);
+            root.Children.Add(winImage);
             Grid.SetRow(winImage, 1);
             DisableButtons(false);
             Methods.PlayWinChordProgression(new Random().Next(48, 60));
@@ -79,7 +99,7 @@ namespace Wpf_Karelia
         {
             var grid = new Grid();
             grid.ShowGridLines = false;
-            for (int i = 0; i < xSize ; i++)
+            for (int i = 0; i < xSize; i++)
             {
                 grid.ColumnDefinitions.Add(new ColumnDefinition());
             }
@@ -160,8 +180,8 @@ namespace Wpf_Karelia
         }
         private void SetImageProperties(Image image, double ActualHeight, double ActualWidth)
         {
-           image.Height = 0.8 * ActualHeight;
-           image.Width = 0.8 * ActualWidth;
+            image.Height = 0.8 * ActualHeight;
+            image.Width = 0.8 * ActualWidth;
         }
 
         private void DrawMine(Button btn)
@@ -271,51 +291,51 @@ namespace Wpf_Karelia
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             int sideRatio = 100 * (int)this.ActualWidth / (int)this.ActualHeight;
-            if (!CheckSize((int)this.ActualHeight, (int)this.ActualWidth) && CheckSize((int)e.PreviousSize.Height, (int)e.PreviousSize.Width))
+            if (!CheckSize((int)this.ActualHeight, (int)this.ActualWidth)
+                && CheckSize((int)e.PreviousSize.Height, (int)e.PreviousSize.Width))
             {
                 this.Height = e.PreviousSize.Height;
                 this.Width = e.PreviousSize.Width;
             }
+            //else { textBlock.FontSize = 96; }
+        }
+
+        private TextBlock HelpText()
+        {
+            var Content = new TextBlock
+            {
+                Text = "Minesweeper Game\n\n" +
+                   "Controls:\n" +
+                   "Left Click: Open the cell\n" +
+                   "Right Click: Mark the cell with a flag\n" +
+                   "Mouse Wheel: Change the size of the game board\n" +
+                   "Restart Button: Restart the game\n\n" +
+                   "The game is a simple minesweeper game. " +
+                   "The goal is to open all the cells that do not contain mines. " +
+                   "If you open a cell with a mine, you lose. If you open all the cells without mines, you win. " +
+                   "You can mark the cells you think contain mines with a flag. " +
+                   "You can change the size of the game board with the mouse wheel. " +
+                   "You can restart the game by clicking the restart button. Have fun!",
+                FontSize = 20,
+                Foreground = Brushes.Black,
+                Background = Brushes.LightGray,
+                Padding = new Thickness(5),
+                Width = 500,
+                TextWrapping = TextWrapping.Wrap
+            };
+            return Content;
         }
 
         private void helpButton_Click(object sender, RoutedEventArgs e)
         {
-            Window popupWindow = new Window
-            {
-                Title = "Help",
-                Width = 500,
-                SizeToContent = SizeToContent.Height,
-            };
-
-            var helpText = new Label
-            {
-                AllowDrop = false,
-                Content = new TextBlock
-                {
-                    Text = "Minesweeper Game\n\n" +
-                    "Controls:\n" +
-                    "Left Click: Open the cell\n" +
-                    "Right Click: Mark the cell with a flag\n" +
-                    "Mouse Wheel: Change the size of the game board\n" +
-                    "Restart Button: Restart the game\n\n" +
-                    "The game is a simple minesweeper game. " +
-                    "The goal is to open all the cells that do not contain mines. " +
-                    "If you open a cell with a mine, you lose. If you open all the cells without mines, you win. " +
-                    "You can mark the cells you think contain mines with a flag. " +
-                    "You can change the size of the game board with the mouse wheel. " +
-                    "You can restart the game by clicking the restart button. Have fun!",
-                    FontSize = 20,
-                    Foreground = Brushes.Black,
-                    TextWrapping = TextWrapping.Wrap
-                },
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                FontSize = 20,
-                Foreground = Brushes.Black,
-            };
-            popupWindow.Content = helpText;
-            popupWindow.ShowDialog();
-
+            Button button = sender as Button;
+            Popup popup = new Popup();
+            popup.Placement = PlacementMode.Bottom;
+            popup.PlacementTarget = button;
+            popup.StaysOpen = false; 
+            TextBlock popupText = HelpText();
+            popup.Child = popupText;
+            popup.IsOpen = true;
         }
 
         private Boolean CheckSize(int Height, int Width)
@@ -353,6 +373,8 @@ namespace Wpf_Karelia
             gridMain.Children.Clear();
             isStarted = false;
             root.Children.Remove(winImage);
+            root.Children.Remove(textBlock);
+            root.Children.Remove(border);
             StartTheGame();
         }
         private void GridMain_MouseWheel(object sender, MouseWheelEventArgs e)
